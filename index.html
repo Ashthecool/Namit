@@ -17,15 +17,16 @@
 
   <section id="screen-start" class="screen">
     <div class="logo">NAM<span>IT</span></div>
-    <p class="tagline">An image appears. Type its name before the clock dies.<br>Movies, games, people, landmarks, chemistry, physics, books, nature — literally anything.</p>
+    <p class="tagline">An image, equation or famous quote appears. Name it, solve it, finish it.<br>Movies, games, chemistry, physics, flags, history — literally anything.</p>
     <div class="rules">
-      <span class="rule">🖼️ See the picture</span>
-      <span class="rule">⌨️ Type the name</span>
-      <span class="rule">⏱️ 90 seconds on the clock</span>
-      <span class="rule">✅ Correct = +6s</span>
-      <span class="rule">❌ Miss = −5s</span>
+      <span class="rule">🖼️ Name the image</span>
+      <span class="rule">🔢 Solve the math</span>
+      <span class="rule">💬 Finish the quote</span>
+      <span class="rule">🗺️ Flags & geography</span>
+      <span class="rule">📜 History & eras</span>
+      <span class="rule">⏱️ 90s clock · ✅ +6s · ❌ −5s</span>
       <span class="rule">🔥 Streak bonuses</span>
-      <span class="rule">♾️ 370+ things & endless mode</span>
+      <span class="rule">♾️ 590+ things & endless mode</span>
     </div>
     <div id="chip-best" class="chip hidden">🏆 <span class="lbl">Best</span> <span id="best-val">0</span></div>
     <div class="start-actions">
@@ -46,6 +47,7 @@
     <div id="card" class="card loading">
       <div id="card-bg" class="card-bg"></div>
       <img id="card-img" alt="Mystery thing to name" draggable="false" referrerpolicy="no-referrer">
+      <div id="card-text"></div>
       <div id="category" class="pill">LOADING…</div>
       <div id="loader" class="loader"></div>
       <div id="overlay" class="overlay">

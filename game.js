@@ -25,6 +25,7 @@ const el = {
   card: $("card"),
   cardBg: $("card-bg"),
   cardImg: $("card-img"),
+  cardText: $("card-text"),
   category: $("category"),
   loader: $("loader"),
   overlay: $("overlay"),
@@ -193,25 +194,125 @@ async function fetchWiki(title, attempt) {
   }
 }
 
+async function tryImg(hi, lo) {
+  try { return await loadImg(hi); } catch (e) { return await loadImg(lo); }
+}
+
+async function fetchWikidataP18(qid) {
+  try {
+    const url = "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&origin=*&entity=" + encodeURIComponent(qid) + "&property=P18";
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const d = await r.json();
+    const claims = d.claims && d.claims.P18;
+    if (!claims || !claims.length) return null;
+    const snak = claims[0].mainsnak;
+    if (!snak || snak.snaktype !== "value" || !snak.datavalue) return null;
+    return snak.datavalue.value;
+  } catch (e) { return null; }
+}
+
+async function commonsThumb(fileTitle) {
+  try {
+    const url = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=imageinfo&iiprop=url&iiurlwidth=480&titles=" + encodeURIComponent(fileTitle);
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const d = await r.json();
+    const pages = d.query && d.query.pages;
+    if (!pages) return null;
+    for (const k in pages) {
+      const ii = pages[k].imageinfo && pages[k].imageinfo[0];
+      if (ii && ii.thumburl) return ii.thumburl;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+async function searchCommons(query) {
+  try {
+    const url = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=" + encodeURIComponent(query) + "&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=480";
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const d = await r.json();
+    const pages = d.query && d.query.pages;
+    if (!pages) return null;
+    const list = Object.keys(pages).map((k) => pages[k]).sort((a, b) => (a.index || 0) - (b.index || 0));
+    for (const p of list) {
+      const ii = p.imageinfo && p.imageinfo[0];
+      if (!ii || !ii.thumburl) continue;
+      if ((ii.width || 0) < 220 || (ii.height || 0) < 150) continue;
+      return ii.thumburl;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+async function resolveImageFor(base) {
+  let desc = "";
+  try {
+    const data = await fetchWiki(base.wiki || base.answer);
+    desc = data.description || "";
+    const src = data.thumbnail && data.thumbnail.source;
+    if (src) {
+      const img = await tryImg(upscale(src), src);
+      return { desc, imgURL: img.src };
+    }
+    const qid = data.wikibase_item;
+    if (qid) {
+      const file = await fetchWikidataP18(qid);
+      if (file) {
+        const t = await commonsThumb(file);
+        if (t) {
+          const img = await tryImg(upscale(t), t);
+          return { desc, imgURL: img.src };
+        }
+      }
+    }
+  } catch (e) { /* fall through to commons search */ }
+  const s = await searchCommons(base.search || base.answer);
+  if (s) {
+    const img = await tryImg(upscale(s), s);
+    return { desc: desc || base.desc || "", imgURL: img.src };
+  }
+  return null;
+}
+
+const failedCount = new Map();
+
 async function nextCurated() {
   if (!curatedQueue.length) return null;
   const base = curatedQueue.pop();
-  try {
-    const data = await fetchWiki(base.wiki || base.answer);
-    const src = data.thumbnail && data.thumbnail.source;
-    if (!src) return null;
-    usedTitles.add(data.title);
-    let img;
-    try { img = await loadImg(upscale(src)); } catch (e) { img = await loadImg(src); }
+  if (base.type === "text") {
     return {
       answer: base.answer,
       aliases: (base.aliases || []).slice(),
       category: base.category,
-      desc: data.description || "",
-      imgURL: img.src
+      desc: base.desc || "",
+      text: base.text,
+      mode: base.mode || "quote",
+      imgURL: null
+    };
+  }
+  try {
+    const res = await resolveImageFor(base);
+    if (!res) {
+      const c = (failedCount.get(base.answer) || 0) + 1;
+      failedCount.set(base.answer, c);
+      if (c < 2) curatedQueue.unshift(base);
+      return null;
+    }
+    usedTitles.add(base.answer);
+    return {
+      answer: base.answer,
+      aliases: (base.aliases || []).slice(),
+      category: base.category,
+      desc: res.desc,
+      imgURL: res.imgURL
     };
   } catch (e) {
-    curatedQueue.unshift(base);
+    const c = (failedCount.get(base.answer) || 0) + 1;
+    failedCount.set(base.answer, c);
+    if (c < 2) curatedQueue.unshift(base);
     return null;
   }
 }
@@ -425,9 +526,17 @@ function startRound() {
   void el.card.offsetWidth;
   el.card.classList.add("pop");
   el.card.classList.remove("loading");
-  el.card.classList.add("ready");
-  el.cardImg.src = state.item.imgURL;
-  el.cardBg.style.backgroundImage = "url(\"" + state.item.imgURL + "\")";
+  const isText = !!state.item.text;
+  el.card.classList.toggle("textmode", isText);
+  if (isText) {
+    el.card.classList.remove("ready");
+    el.cardText.textContent = state.item.text;
+    el.cardText.dataset.mode = state.item.mode || "quote";
+  } else {
+    el.cardImg.src = state.item.imgURL;
+    el.cardBg.style.backgroundImage = "url(\"" + state.item.imgURL + "\")";
+    el.card.classList.add("ready");
+  }
   el.category.textContent = state.item.category;
   el.desc.textContent = state.item.desc || "";
   el.timerFill.style.width = "100%";
@@ -447,6 +556,7 @@ function advance() {
     state.waiting = true;
     state.locked = true;
     el.card.classList.remove("ready");
+    el.card.classList.remove("textmode");
     el.card.classList.add("loading");
     el.category.textContent = "LOADING…";
     el.desc.textContent = "";
@@ -526,6 +636,7 @@ function startGame() {
   renderTime();
   el.loadError.classList.add("hidden");
   el.card.classList.remove("ready");
+  el.card.classList.remove("textmode");
   el.card.classList.add("loading");
   el.cardImg.removeAttribute("src");
   el.cardBg.style.backgroundImage = "none";

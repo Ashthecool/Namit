@@ -214,6 +214,50 @@ body {
   backdrop-filter: blur(6px);
 }
 
+#card-text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 28px 30px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(19px, 4.8vw, 26px);
+  line-height: 1.5;
+  color: #f3effe;
+  word-break: break-word;
+}
+.card.textmode #card-text { display: flex; }
+.card.textmode #card-img,
+.card.textmode .card-bg,
+.card.textmode .loader { display: none; }
+#card-text[data-mode="math"] {
+  font-family: "Space Grotesk", Consolas, monospace;
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(26px, 6vw, 40px);
+  letter-spacing: 1px;
+}
+#card-text[data-mode="quiz"] {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: clamp(20px, 5vw, 28px);
+  line-height: 1.4;
+}
+#card-text[data-mode="quote"]::before {
+  content: "\201C";
+  font-size: 58px;
+  line-height: 0.5;
+  color: var(--a2);
+  font-style: normal;
+}
+
 .loader {
   position: absolute;
   z-index: 4;
