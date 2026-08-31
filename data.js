@@ -605,5 +605,191 @@ const CURATED_ITEMS = [
   { answer: "Trampoline", aliases: ["trampolines"], category: "Game", tier: 3, wiki: "Trampoline" },
   { answer: "Pogo Stick", aliases: ["pogostick"], category: "Game", tier: 3, wiki: "Pogo stick" },
   { answer: "Model Railway", aliases: ["model train", "model trains", "model railroad"], category: "Game", tier: 3, wiki: "Model railway" },
-  { answer: "Crossword", aliases: ["crossword puzzle", "crosswords"], category: "Game", tier: 3, wiki: "Crossword" }
+  { answer: "Crossword", aliases: ["crossword puzzle", "crosswords"], category: "Game", tier: 3, wiki: "Crossword" },
+
+  // === EXPANSION PACK — 180+ new subjects across new categories ===
+  // Fashion
+  { answer: "Kimono", aliases: [], category: "Fashion", tier: 2, wiki: "Kimono" },
+  { answer: "Sari", aliases: ["saree"], category: "Fashion", tier: 2, wiki: "Sari" },
+  { answer: "Beret", aliases: [], category: "Fashion", tier: 2, wiki: "Beret" },
+  { answer: "Tuxedo", aliases: ["tux"], category: "Fashion", tier: 2, wiki: "Tuxedo" },
+  { answer: "High Heels", aliases: ["stilettos", "stiletto heels"], category: "Fashion", tier: 2, wiki: "High-heeled shoe" },
+  { answer: "Fedora", aliases: ["fedora hat"], category: "Fashion", tier: 2, wiki: "Fedora" },
+  { answer: "Kilts", aliases: ["kilt"], category: "Fashion", tier: 2, wiki: "Kilt" },
+  { answer: "Leather Jacket", aliases: ["biker jacket"], category: "Fashion", tier: 2, wiki: "Leather jacket" },
+  { answer: "Polo Shirt", aliases: ["polo"], category: "Fashion", tier: 2, wiki: "Polo shirt" },
+  { answer: "Bikini", aliases: [], category: "Fashion", tier: 2, wiki: "Bikini" },
+  { answer: "Hanbok", aliases: [], category: "Fashion", tier: 3, wiki: "Hanbok" },
+  { answer: "Dirndl", aliases: [], category: "Fashion", tier: 3, wiki: "Dirndl" },
+  { answer: "Sombrero", aliases: [], category: "Fashion", tier: 3, wiki: "Sombrero" },
+  { answer: "Turban", aliases: [], category: "Fashion", tier: 3, wiki: "Turban" },
+  { answer: "Yukata", aliases: [], category: "Fashion", tier: 3, wiki: "Yukata" },
+
+  // Architecture
+  { answer: "Fallingwater", aliases: ["falling water house"], category: "Architecture", tier: 2, wiki: "Fallingwater" },
+  { answer: "Guggenheim Museum", aliases: ["guggenheim", "solomon guggenheim museum"], category: "Architecture", tier: 2, wiki: "Solomon R. Guggenheim Museum" },
+  { answer: "Burj Al Arab", aliases: ["burj al arab hotel"], category: "Architecture", tier: 2, wiki: "Burj Al Arab" },
+  { answer: "Pantheon", aliases: ["the pantheon", "pantheon rome"], category: "Architecture", tier: 2, wiki: "Pantheon, Rome" },
+  { answer: "Sydney Opera House", aliases: [], category: "Architecture", tier: 2, wiki: "Sydney Opera House" },
+  { answer: "Big Ben", aliases: [], category: "Architecture", tier: 2, wiki: "Big Ben" },
+  { answer: "Gaudi Casa Batllo", aliases: ["casa batllo", "casa batlló"], category: "Architecture", tier: 3, wiki: "Casa Batlló" },
+  { answer: "Pagoda", aliases: ["pagodas"], category: "Architecture", tier: 3, wiki: "Pagoda" },
+  { answer: "Stave Church", aliases: ["norwegian stave church"], category: "Architecture", tier: 3, wiki: "Stave church" },
+  { answer: "Ziggurat", aliases: ["ziggurats"], category: "Architecture", tier: 3, wiki: "Ziggurat" },
+
+  // Cinema
+  { answer: "The Godfather", aliases: ["godfather"], category: "Cinema", tier: 2, wiki: "The Godfather" },
+  { answer: "Citizen Kane", aliases: [], category: "Cinema", tier: 2, wiki: "Citizen Kane" },
+  { answer: "Casablanca", aliases: ["casablanca film"], category: "Cinema", tier: 2, wiki: "Casablanca (film)" },
+  { answer: "Star Wars", aliases: ["star wars film", "a new hope"], category: "Cinema", tier: 2, wiki: "Star Wars (film)" },
+  { answer: "Titanic", aliases: ["titanic film", "titanic 1997"], category: "Cinema", tier: 2, wiki: "Titanic (1997 film)" },
+  { answer: "The Shawshank Redemption", aliases: ["shawshank redemption", "shawshank"], category: "Cinema", tier: 2, wiki: "The Shawshank Redemption" },
+  { answer: "Pulp Fiction", aliases: [], category: "Cinema", tier: 2, wiki: "Pulp Fiction" },
+  { answer: "Jurassic Park", aliases: [], category: "Cinema", tier: 2, wiki: "Jurassic Park (film)" },
+  { answer: "Avatar", aliases: ["avatar film", "avatar 2009"], category: "Cinema", tier: 2, wiki: "Avatar (2009 film)" },
+  { answer: "The Matrix", aliases: ["matrix film"], category: "Cinema", tier: 2, wiki: "The Matrix" },
+  { answer: "Psycho", aliases: ["psycho film", "psycho hitchcock"], category: "Cinema", tier: 3, wiki: "Psycho (1960 film)" },
+  { answer: "Metropolis", aliases: ["metropolis film", "metropolis 1927"], category: "Cinema", tier: 3, wiki: "Metropolis (1927 film)" },
+  { answer: "Gone with the Wind", aliases: [], category: "Cinema", tier: 3, wiki: "Gone with the Wind (film)" },
+  { answer: "Spirited Away", aliases: ["sen to chihiro"], category: "Cinema", tier: 3, wiki: "Spirited Away" },
+
+  // TV Show
+  { answer: "Breaking Bad", aliases: [], category: "TV Show", tier: 2, wiki: "Breaking Bad" },
+  { answer: "Friends", aliases: ["friends tv show"], category: "TV Show", tier: 2, wiki: "Friends" },
+  { answer: "Game of Thrones", aliases: ["got"], category: "TV Show", tier: 2, wiki: "Game of Thrones" },
+  { answer: "The Simpsons", aliases: ["simpsons"], category: "TV Show", tier: 2, wiki: "The Simpsons" },
+  { answer: "Stranger Things", aliases: [], category: "TV Show", tier: 2, wiki: "Stranger Things" },
+  { answer: "Sherlock", aliases: ["sherlock bbc"], category: "TV Show", tier: 2, wiki: "Sherlock (TV series)" },
+  { answer: "Doctor Who", aliases: ["dr who"], category: "TV Show", tier: 3, wiki: "Doctor Who" },
+  { answer: "Twin Peaks", aliases: [], category: "TV Show", tier: 3, wiki: "Twin Peaks" },
+  { answer: "Seinfeld", aliases: [], category: "TV Show", tier: 3, wiki: "Seinfeld" },
+  { answer: "The Office", aliases: ["the office us", "the office american"], category: "TV Show", tier: 3, wiki: "The Office (American TV series)" },
+
+  // Cartoon
+  { answer: "Mickey Mouse", aliases: ["mickey"], category: "Cartoon", tier: 2, wiki: "Mickey Mouse" },
+  { answer: "Bugs Bunny", aliases: ["bugs bunny"], category: "Cartoon", tier: 2, wiki: "Bugs Bunny" },
+  { answer: "SpongeBob SquarePants", aliases: ["spongebob", "sponge bob"], category: "Cartoon", tier: 2, wiki: "SpongeBob SquarePants" },
+  { answer: "Scooby-Doo", aliases: ["scooby doo", "scooby"], category: "Cartoon", tier: 2, wiki: "Scooby-Doo" },
+  { answer: "Tom and Jerry", aliases: ["tom & jerry"], category: "Cartoon", tier: 2, wiki: "Tom and Jerry" },
+  { answer: "The Flintstones", aliases: ["flintstones"], category: "Cartoon", tier: 3, wiki: "The Flintstones" },
+  { answer: "Peppa Pig", aliases: ["peppa"], category: "Cartoon", tier: 3, wiki: "Peppa Pig" },
+  { answer: "Garfield", aliases: [], category: "Cartoon", tier: 3, wiki: "Garfield" },
+  { answer: "Doraemon", aliases: [], category: "Cartoon", tier: 3, wiki: "Doraemon" },
+  { answer: "Hello Kitty", aliases: ["hello kitty cat"], category: "Cartoon", tier: 3, wiki: "Hello Kitty" },
+
+  // Anime
+  { answer: "Goku", aliases: ["son goku"], category: "Anime", tier: 2, wiki: "Goku" },
+  { answer: "Naruto", aliases: ["naruto uzumaki"], category: "Anime", tier: 2, wiki: "Naruto" },
+  { answer: "Sailor Moon", aliases: ["usagi tsukino"], category: "Anime", tier: 2, wiki: "Sailor Moon" },
+  { answer: "Totoro", aliases: ["my neighbor totoro"], category: "Anime", tier: 2, wiki: "My Neighbor Totoro" },
+  { answer: "Pikachu", aliases: [], category: "Anime", tier: 2, wiki: "Pikachu" },
+  { answer: "Luffy", aliases: ["monkey d luffy"], category: "Anime", tier: 2, wiki: "Monkey D. Luffy" },
+  { answer: "Eren Yeager", aliases: ["eren jaeger", "eren"], category: "Anime", tier: 3, wiki: "Eren Yeager" },
+  { answer: "Light Yagami", aliases: ["kira"], category: "Anime", tier: 3, wiki: "Light Yagami" },
+  { answer: "Gundam", aliases: ["mobile suit gundam"], category: "Anime", tier: 3, wiki: "Gundam" },
+  { answer: "Astro Boy", aliases: ["atom", "tetsuwan atom"], category: "Anime", tier: 3, wiki: "Astro Boy" },
+
+  // Comics
+  { answer: "Superman", aliases: ["clark kent"], category: "Comics", tier: 2, wiki: "Superman" },
+  { answer: "Spider-Man", aliases: ["spiderman", "peter parker"], category: "Comics", tier: 2, wiki: "Spider-Man" },
+  { answer: "Batman", aliases: ["bruce wayne"], category: "Comics", tier: 2, wiki: "Batman" },
+  { answer: "Wonder Woman", aliases: ["diana prince"], category: "Comics", tier: 2, wiki: "Wonder Woman" },
+  { answer: "Iron Man", aliases: ["tony stark"], category: "Comics", tier: 2, wiki: "Iron Man" },
+  { answer: "Asterix", aliases: ["asterix and obelix"], category: "Comics", tier: 3, wiki: "Asterix" },
+  { answer: "Tintin", aliases: ["the adventures of tintin"], category: "Comics", tier: 3, wiki: "The Adventures of Tintin" },
+  { answer: "One Piece", aliases: [], category: "Comics", tier: 3, wiki: "One Piece" },
+
+  // Company / Brand
+  { answer: "Apple Logo", aliases: ["apple", "apple inc"], category: "Brand", tier: 2, wiki: "Apple Inc." },
+  { answer: "Nike Swoosh", aliases: ["nike", "nike logo"], category: "Brand", tier: 2, wiki: "Nike, Inc." },
+  { answer: "McDonald's", aliases: ["mcdonalds", "golden arches"], category: "Brand", tier: 2, wiki: "McDonald's" },
+  { answer: "Tesla", aliases: ["tesla motors", "tesla inc"], category: "Brand", tier: 2, wiki: "Tesla, Inc." },
+  { answer: "Google", aliases: ["google logo"], category: "Brand", tier: 2, wiki: "Google" },
+  { answer: "Ferrari", aliases: ["ferrari logo"], category: "Brand", tier: 3, wiki: "Ferrari" },
+  { answer: "Lamborghini", aliases: ["lambo"], category: "Brand", tier: 3, wiki: "Lamborghini" },
+  { answer: "Starbucks", aliases: ["starbucks logo"], category: "Brand", tier: 3, wiki: "Starbucks" },
+
+  // Drink
+  { answer: "Espresso", aliases: ["espresso coffee"], category: "Drink", tier: 2, wiki: "Espresso" },
+  { answer: "Matcha", aliases: ["matcha tea"], category: "Drink", tier: 2, wiki: "Matcha" },
+  { answer: "Bubble Tea", aliases: ["boba tea", "boba"], category: "Drink", tier: 2, wiki: "Bubble tea" },
+  { answer: "Mojito", aliases: [], category: "Drink", tier: 2, wiki: "Mojito" },
+  { answer: "Champagne", aliases: [], category: "Drink", tier: 3, wiki: "Champagne" },
+  { answer: "Sake", aliases: ["japanese sake"], category: "Drink", tier: 3, wiki: "Sake" },
+  { answer: "Chai", aliases: ["masala chai"], category: "Drink", tier: 3, wiki: "Masala chai" },
+  { answer: "Cappuccino", aliases: [], category: "Drink", tier: 3, wiki: "Cappuccino" },
+
+  // Dessert
+  { answer: "Macaron", aliases: ["macarons"], category: "Dessert", tier: 2, wiki: "Macaron" },
+  { answer: "Tiramisu", aliases: [], category: "Dessert", tier: 2, wiki: "Tiramisu" },
+  { answer: "Cheesecake", aliases: [], category: "Dessert", tier: 2, wiki: "Cheesecake" },
+  { answer: "Mochi", aliases: [], category: "Dessert", tier: 2, wiki: "Mochi" },
+  { answer: "Baklava", aliases: [], category: "Dessert", tier: 3, wiki: "Baklava" },
+  { answer: "Churro", aliases: ["churros"], category: "Dessert", tier: 3, wiki: "Churro" },
+  { answer: "Pavlova", aliases: [], category: "Dessert", tier: 3, wiki: "Pavlova" },
+  { answer: "Gulab Jamun", aliases: ["gulab jamuns"], category: "Dessert", tier: 3, wiki: "Gulab jamun" },
+
+  // Internet Culture
+  { answer: "Gangnam Style", aliases: ["gangnam style psy"], category: "Internet", tier: 2, wiki: "Gangnam Style" },
+  { answer: "Harlem Shake", aliases: ["harlem shake meme"], category: "Internet", tier: 2, wiki: "Harlem Shake (meme)" },
+  { answer: "Grumpy Cat", aliases: ["grumpy cat meme"], category: "Internet", tier: 2, wiki: "Grumpy Cat" },
+  { answer: "Doge", aliases: ["doge meme", "shiba inu meme"], category: "Internet", tier: 2, wiki: "Doge (meme)" },
+  { answer: "Rickroll", aliases: ["rick roll", "never gonna give you up"], category: "Internet", tier: 3, wiki: "Rickrolling" },
+  { answer: "Nyan Cat", aliases: ["nyan cat meme"], category: "Internet", tier: 3, wiki: "Nyan Cat" },
+  { answer: "Distracted Boyfriend", aliases: ["distracted boyfriend meme"], category: "Internet", tier: 3, wiki: "Distracted boyfriend" },
+  { answer: "Pepe the Frog", aliases: ["pepe meme"], category: "Internet", tier: 3, wiki: "Pepe the Frog" },
+
+  // Religion
+  { answer: "Vatican City", aliases: ["the vatican"], category: "Religion", tier: 2, wiki: "Vatican City" },
+  { answer: "Mecca", aliases: ["makkah"], category: "Religion", tier: 2, wiki: "Mecca" },
+  { answer: "Golden Temple", aliases: ["harmandir sahib"], category: "Religion", tier: 2, wiki: "Golden Temple" },
+  { answer: "Bodh Gaya", aliases: ["bodhgaya"], category: "Religion", tier: 3, wiki: "Bodh Gaya" },
+  { answer: "Torah", aliases: ["the torah"], category: "Religion", tier: 3, wiki: "Torah" },
+  { answer: "Quran", aliases: ["koran", "the quran"], category: "Religion", tier: 3, wiki: "Quran" },
+  { answer: "Bhagavad Gita", aliases: ["gita"], category: "Religion", tier: 3, wiki: "Bhagavad Gita" },
+  { answer: "Dalai Lama", aliases: ["the dalai lama"], category: "Religion", tier: 3, wiki: "Dalai Lama" },
+
+  // Philosophy
+  { answer: "Plato's Cave", aliases: ["allegory of the cave", "plato cave"], category: "Philosophy", tier: 2, wiki: "Allegory of the cave" },
+  { answer: "Nietzsche", aliases: ["friedrich nietzsche"], category: "Philosophy", tier: 2, wiki: "Friedrich Nietzsche" },
+  { answer: "Socrates", aliases: [], category: "Philosophy", tier: 2, wiki: "Socrates" },
+  { answer: "Existentialism", aliases: [], category: "Philosophy", tier: 3, wiki: "Existentialism" },
+  { answer: "Stoicism", aliases: ["stoic"], category: "Philosophy", tier: 3, wiki: "Stoicism" },
+  { answer: "Yin and Yang", aliases: ["yin yang", "taijitu"], category: "Philosophy", tier: 3, wiki: "Yin and yang" },
+
+  // Currency & Language
+  { answer: "Yen", aliases: ["japanese yen"], category: "Currency", tier: 2, wiki: "Japanese yen" },
+  { answer: "Euro", aliases: ["euro currency"], category: "Currency", tier: 2, wiki: "Euro" },
+  { answer: "Bitcoin", aliases: ["btc"], category: "Currency", tier: 2, wiki: "Bitcoin" },
+  { answer: "Dollar", aliases: ["us dollar", "american dollar"], category: "Currency", tier: 3, wiki: "United States dollar" },
+  { answer: "Hieroglyphs", aliases: ["egyptian hieroglyphs"], category: "Language", tier: 2, wiki: "Egyptian hieroglyphs" },
+  { answer: "Braille", aliases: [], category: "Language", tier: 2, wiki: "Braille" },
+  { answer: "Esperanto", aliases: [], category: "Language", tier: 3, wiki: "Esperanto" },
+  { answer: "Morse Code", aliases: ["morse", "morse code alphabet"], category: "Language", tier: 3, wiki: "Morse code" },
+
+  // Tech - modern
+  { answer: "iPhone", aliases: ["apple iphone"], category: "Tech", tier: 2, wiki: "IPhone" },
+  { answer: "Tesla Model S", aliases: ["model s"], category: "Tech", tier: 2, wiki: "Tesla Model S" },
+  { answer: "Oculus Rift", aliases: ["oculus", "meta quest"], category: "Tech", tier: 2, wiki: "Oculus Rift" },
+  { answer: "ChatGPT", aliases: ["chat gpt"], category: "Tech", tier: 2, wiki: "ChatGPT" },
+  { answer: "YouTube", aliases: ["youtube logo"], category: "Tech", tier: 2, wiki: "YouTube" },
+  { answer: "Wikipedia", aliases: ["wikipedia logo"], category: "Tech", tier: 2, wiki: "Wikipedia" },
+  { answer: "Linux", aliases: ["linux penguin", "tux"], category: "Tech", tier: 3, wiki: "Linux" },
+  { answer: "Arduino", aliases: [], category: "Tech", tier: 3, wiki: "Arduino" },
+  { answer: "Raspberry Pi", aliases: ["raspberry pi computer"], category: "Tech", tier: 3, wiki: "Raspberry Pi" },
+  { answer: "Smartwatch", aliases: ["apple watch"], category: "Tech", tier: 3, wiki: "Smartwatch" },
+
+  // Vehicles expanded
+  { answer: "Boeing 747", aliases: ["747", "jumbo jet"], category: "Vehicle", tier: 2, wiki: "Boeing 747" },
+  { answer: "Orient Express", aliases: ["the orient express"], category: "Vehicle", tier: 2, wiki: "Orient Express" },
+  { answer: "Harley-Davidson", aliases: ["harley davidson", "harley"], category: "Vehicle", tier: 2, wiki: "Harley-Davidson" },
+  { answer: "Sputnik", aliases: ["sputnik 1"], category: "Vehicle", tier: 3, wiki: "Sputnik 1" },
+  { answer: "Airbus A380", aliases: ["a380", "airbus"], category: "Vehicle", tier: 3, wiki: "Airbus A380" },
+
+  // Nature / Expanded Geography
+  { answer: "Mariana Trench", aliases: ["mariana trench deepest"], category: "Nature", tier: 2, wiki: "Mariana Trench" },
+  { answer: "Sahara Desert", aliases: ["sahara"], category: "Nature", tier: 2, wiki: "Sahara" },
+  { answer: "Amazon Rainforest", aliases: ["the amazon"], category: "Nature", tier: 2, wiki: "Amazon rainforest" },
+  { answer: "Great Barrier Reef", aliases: [], category: "Nature", tier: 2, wiki: "Great Barrier Reef" },
+  { answer: "Victoria Falls", aliases: [], category: "Nature", tier: 2, wiki: "Victoria Falls" }
 ];
