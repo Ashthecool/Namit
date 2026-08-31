@@ -27,6 +27,73 @@ body {
   overflow-x: hidden;
 }
 
+/* AdSense side-banners — fixed to viewport sides so game zoom/centering is untouched */
+.page-layout{ display: block; }
+.ad-side{
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  min-height: 600px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+/* keep 20px gap from the 560px-centered game */
+.ad-left{ left: calc(50% - 280px - 160px - 20px); }
+.ad-right{ right: calc(50% - 280px - 160px - 20px); }
+.ad-side .adsbygoogle{
+  width: 100%;
+  min-height: 580px;
+}
+.ad-label{
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 6px 0;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,255,255,0.02);
+}
+@media (min-width: 1350px){
+  .ad-side{ width: 300px; min-height: 600px; }
+  .ad-left{ left: calc(50% - 280px - 300px - 20px); }
+  .ad-right{ right: calc(50% - 280px - 300px - 20px); }
+  .ad-side .adsbygoogle{ min-height: 580px; }
+}
+/* hide fixed side banners when there isn't room — show them inline instead */
+@media (max-width: 1100px){
+  .ad-side{
+    position: static;
+    transform: none;
+    width: min(100%, 728px);
+    min-height: 100px;
+    margin: 14px auto;
+    left: auto;
+    right: auto;
+  }
+  .ad-side .adsbygoogle{ min-height: 90px; }
+  /* reorder so left ad appears above game, right below */
+  .page-layout{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page-layout #app{ order: 1; width: 100%; }
+  .ad-left{ order: 0; }
+  .ad-right{ order: 2; }
+}
+@media (max-width: 480px){
+  .ad-side{ width: 100%; border-radius: 10px; }
+}
+
 #app { position: relative; z-index: 1; }
 
 .hidden { display: none !important; }
