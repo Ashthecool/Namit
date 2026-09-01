@@ -43,11 +43,10 @@ const el = {
   form: $("form-guess"),
   input: $("guess-input"),
   btnGuess: $("btn-guess"),
-  btnMicInline: $("btn-mic-inline"),
   btnHint: $("btn-hint"),
   btnSkip: $("btn-skip"),
-  btnModeText: $("btn-mode-text"),
-  btnModeMic: $("btn-mode-mic"),
+  inputToggle: $("input-toggle"),
+  inputToggleWrap: document.querySelector(".input-toggle-wrap"),
   micPanel: $("mic-panel"),
   btnMic: $("btn-mic"),
   micStatus: $("mic-status"),
@@ -332,20 +331,27 @@ function setInputMode(mode){
   inputMode = mode;
   try{ localStorage.setItem("namit-input-mode", mode); }catch(e){}
   const isMic = mode === "mic";
-  if(el.btnModeText){ el.btnModeText.classList.toggle("active", !isMic); el.btnModeText.setAttribute("aria-selected", String(!isMic)); }
-  if(el.btnModeMic){ el.btnModeMic.classList.toggle("active", isMic); el.btnModeMic.setAttribute("aria-selected", String(isMic)); }
+  if(el.inputToggle){
+    el.inputToggle.classList.toggle("mic-active", isMic);
+    el.inputToggle.setAttribute("aria-checked", String(isMic));
+    el.inputToggle.title = isMic ? "Mic mode — click to switch to Keyboard" : "Keyboard mode — click to switch to Mic";
+  }
   if(el.form) el.form.classList.toggle("mic-hidden", isMic);
   if(el.micPanel) el.micPanel.classList.toggle("hidden", !isMic);
   if(isMic && !micSupported && el.micStatus){
     el.micStatus.textContent = "Voice not supported in this browser — try Chrome or Edge";
     el.micStatus.classList.remove("listening");
     if(el.btnMic) el.btnMic.disabled = true;
-    if(el.btnMicInline) el.btnMicInline.disabled = true;
   } else {
-    if(el.btnMic) el.btnMic.disabled = !!state.locked;
-    if(el.btnMicInline) el.btnMicInline.disabled = !micSupported;
+    if(el.btnMic) el.btnMic.disabled = !!state.locked || !micSupported;
   }
   if(isMic) stopMic();
+  // tooltip on wrap stays informative
+  if(el.inputToggleWrap){
+    el.inputToggleWrap.title = isMic
+      ? "Mic mode: tap the big mic and speak the answer. Same scoring as typing. Requires mic permission."
+      : "Keyboard mode: type your answer. Toggle to Mic for hands-free voice input. Best in Chrome/Edge.";
+  }
 }
 function ensureRecognition(){
   if(recognition) return recognition;
@@ -359,7 +365,7 @@ function ensureRecognition(){
   r.onstart = ()=>{
     micListening = true;
     if(el.btnMic) el.btnMic.classList.add("listening");
-    if(el.btnMicInline) el.btnMicInline.classList.add("listening");
+    if(el.micPanel) el.micPanel.classList.add("listening");
     if(el.micStatus){ el.micStatus.textContent = "Listening… say the answer"; el.micStatus.classList.add("listening"); }
     if(el.micTranscript){ el.micTranscript.textContent = ""; el.micTranscript.classList.add("interim"); }
   };
@@ -399,7 +405,7 @@ function ensureRecognition(){
   r.onerror = (ev)=>{
     micListening = false;
     if(el.btnMic) el.btnMic.classList.remove("listening");
-    if(el.btnMicInline) el.btnMicInline.classList.remove("listening");
+    if(el.micPanel) el.micPanel.classList.remove("listening");
     if(el.micStatus){
       el.micStatus.classList.remove("listening");
       const err = ev.error || "error";
@@ -412,7 +418,7 @@ function ensureRecognition(){
   r.onend = ()=>{
     micListening = false;
     if(el.btnMic) el.btnMic.classList.remove("listening");
-    if(el.btnMicInline) el.btnMicInline.classList.remove("listening");
+    if(el.micPanel) el.micPanel.classList.remove("listening");
     if(el.micStatus && !state.locked) {
       if(!el.micStatus.textContent || el.micStatus.textContent === "Listening… say the answer"){
         el.micStatus.textContent = "Tap the mic and say the answer";
@@ -496,7 +502,7 @@ function stopMic(){
   micListening = false;
   if(recognition){ try{ recognition.stop(); }catch(e){} }
   if(el.btnMic) el.btnMic.classList.remove("listening");
-  if(el.btnMicInline) el.btnMicInline.classList.remove("listening");
+  if(el.micPanel) el.micPanel.classList.remove("listening");
   if(el.micStatus) el.micStatus.classList.remove("listening");
 }
 
@@ -795,7 +801,6 @@ function onGlobalExpired() {
   el.input.disabled = true;
   el.btnGuess.disabled = true;
   if(el.btnMic) el.btnMic.disabled = true;
-  if(el.btnMicInline) el.btnMicInline.disabled = true;
   sfx.over();
   setTimeout(gameOver, 350);
 }
@@ -918,7 +923,7 @@ function startRound() {
   if(el.micTranscript) { el.micTranscript.textContent = ""; el.micTranscript.classList.remove("interim"); }
   if(el.micStatus){ el.micStatus.textContent = micSupported ? "Tap the mic and say the answer" : "Voice not supported — use Chrome/Edge"; el.micStatus.classList.remove("listening"); }
   if(el.btnMic) el.btnMic.disabled = !micSupported || false;
-  if(el.btnMicInline) el.btnMicInline.disabled = !micSupported;
+  if(el.micPanel) el.micPanel.classList.remove("listening");
   stopMic();
   if(inputMode === "text") el.input.focus();
   stopTimer = startTimer(roundSeconds(), onTimeout);
@@ -1120,54 +1125,30 @@ el.mute.addEventListener("click", () => {
   updateMuteIcon();
 });
 
-// ── Mic mode wiring ──
+// ── Mic mode wiring — single toggle ──
 (function initMic(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   micSupported = !!SR;
   if(!micSupported){
-    if(el.btnModeMic) { el.btnModeMic.disabled = true; el.btnModeMic.title = "Voice not supported in this browser — use Chrome/Edge"; }
-    if(el.btnMicInline) { el.btnMicInline.disabled = true; el.btnMicInline.title = "Voice not supported"; }
+    if(el.inputToggle) { el.inputToggle.disabled = true; el.inputToggle.title = "Voice not supported in this browser — use Chrome/Edge (HTTPS required)"; }
     if(el.btnMic) el.btnMic.disabled = true;
+    if(el.micStatus) el.micStatus.textContent = "Voice not supported — use Chrome/Edge";
   }
   setInputMode(inputMode);
-  if(el.btnModeText) el.btnModeText.addEventListener("click", ()=> setInputMode("text"));
-  if(el.btnModeMic) el.btnModeMic.addEventListener("click", ()=>{
+  if(el.inputToggle) el.inputToggle.addEventListener("click", ()=>{
     if(!micSupported){
-      if(el.micStatus) el.micStatus.textContent = "Voice not supported — use Chrome/Edge or switch to Text";
+      if(el.micStatus){
+        el.micStatus.textContent = "Voice not supported — use Chrome/Edge or try HTTPS";
+        // briefly show panel even in text mode so user sees message
+        el.micPanel.classList.remove("hidden");
+        el.form.classList.add("mic-hidden");
+      }
       return;
     }
-    setInputMode("mic");
+    setInputMode(inputMode === "mic" ? "text" : "mic");
   });
   if(el.btnMic) el.btnMic.addEventListener("click", startMic);
-  if(el.btnMicInline) el.btnMicInline.addEventListener("click", ()=>{
-    // inline mic: quick voice guess without switching mode
-    if(!micSupported){
-      if(el.micStatus) el.micStatus.textContent = "Voice not supported — use Chrome/Edge";
-      return;
-    }
-    // if in text mode, show temporary status in mic panel or inline
-    if(inputMode !== "mic"){
-      // use inline listening then evaluate: show transcript in input
-      startMicInline();
-    } else {
-      startMic();
-    }
-  });
 })();
-
-function startMicInline(){
-  // reuse same recognition but show feedback in input placeholder
-  const r = ensureRecognition();
-  if(!r) return;
-  if(el.input) el.input.placeholder = "Listening… say the answer";
-  // temporarily route status to input area via micStatus if hidden
-  if(el.micPanel && el.micPanel.classList.contains("hidden")){
-    el.micPanel.classList.remove("hidden");
-    el.micPanel.style.opacity = "0.95";
-    setTimeout(()=>{ if(inputMode==="text" && !micListening) { el.micPanel.classList.add("hidden"); el.micPanel.style.opacity=""; if(el.input) el.input.placeholder="Type your guess…"; } }, 6000);
-  }
-  startMic();
-}
 
 // ── Leaderboard interactions ──
 function handleLbSubmit(){

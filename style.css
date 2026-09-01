@@ -429,46 +429,101 @@ body {
 .meta-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
 .meta-row .btn { padding: 10px 16px; font-size: 13.5px; border-radius: 12px; }
 
-/* ── Input mode toggle + Mic mode ── */
-.input-mode-toggle{ display:flex; gap:8px; margin-top:16px; justify-content:center; }
-.mode-btn{
-  font:inherit; font-size:13.5px; font-weight:700;
-  padding:8px 14px; border-radius:99px; cursor:pointer;
-  border:1px solid var(--line); background:var(--card); color:var(--muted);
-  transition:border-color .15s, color .15s, background .15s;
+/* ── Input toggle (single switch) + Mic mode — matches site aesthetic, spacious ── */
+.input-toggle-wrap{
+  margin-top:18px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:10px 12px 10px 16px;
+  border-radius:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  backdrop-filter:blur(6px);
 }
-.mode-btn.active{ background:linear-gradient(135deg,var(--a1),#5b8cff); color:#fff; border-color:transparent; box-shadow:0 6px 18px rgba(124,92,255,.35); }
-.mode-btn:disabled{ opacity:.45; cursor:not-allowed; }
-
-.mic-inline{ padding:14px 16px; border-radius:14px; font-size:18px; line-height:1; min-width:48px; }
-.mic-inline.listening{ background:linear-gradient(135deg,var(--bad),#ff8a5b); animation:pulseMic .9s ease infinite; }
-
-.mic-panel{ margin-top:16px; display:flex; flex-direction:column; align-items:center; gap:12px; padding:18px 14px; border-radius:16px; background:var(--card); border:1px solid var(--line); text-align:center; }
-.mic-big{
-  position:relative; width:88px; height:88px; border-radius:50%; border:0; cursor:pointer;
-  background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff; font-size:36px;
-  display:grid; place-items:center; box-shadow:0 10px 30px rgba(124,92,255,.45);
-  transition:transform .12s, filter .12s;
+.input-toggle-wrap:hover{ border-color:rgba(255,255,255,0.18); }
+.input-toggle-label{
+  font-weight:700; font-size:13px; letter-spacing:.6px; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:6px;
 }
-.mic-big:hover{ transform:translateY(-2px); filter:brightness(1.07); }
-.mic-big:active{ transform:scale(.97); }
-.mic-big.listening{ animation:pulseMic .9s ease infinite; background:linear-gradient(135deg,var(--bad),#ff8a5b); }
-.mic-big:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
-.mic-icon{ position:relative; z-index:1; }
-.mic-pulse{
-  position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--a1); opacity:0; pointer-events:none;
+.input-toggle-label .info-dot{
+  width:18px; height:18px; border-radius:50%; display:grid; place-items:center;
+  font-size:11px; color:var(--muted); border:1px solid var(--line); background:rgba(255,255,255,0.04);
+  cursor:help;
 }
-.mic-big.listening .mic-pulse{ animation:micRing 1.2s ease-out infinite; border-color:rgba(251,113,133,.9); }
-@keyframes pulseMic{ 0%,100%{ box-shadow:0 10px 30px rgba(124,92,255,.45);} 50%{ box-shadow:0 14px 36px rgba(124,92,255,.7);} }
-@keyframes micRing{ 0%{ transform:scale(.9); opacity:.7;} 100%{ transform:scale(1.35); opacity:0;} }
+.input-toggle{
+  position:relative; display:flex; align-items:center; justify-content:space-between;
+  width:min(300px, 64vw); height:44px; padding:4px;
+  border-radius:99px; border:1px solid var(--line);
+  background:rgba(255,255,255,0.06); cursor:pointer;
+  transition:border-color .2s, background .2s, box-shadow .2s;
+  flex-shrink:0;
+}
+.input-toggle:hover{ border-color:rgba(255,255,255,0.22); }
+.input-toggle:focus-visible{ outline:2px solid var(--a1); outline-offset:2px; }
+.input-toggle .toggle-opt{
+  flex:1; text-align:center; font-weight:700; font-size:13.5px; z-index:1;
+  color:var(--muted); transition:color .2s; white-space:nowrap;
+}
+.input-toggle.mic-active .toggle-opt.is-mic{ color:#fff; }
+.input-toggle:not(.mic-active) .toggle-opt.is-text{ color:#fff; }
+.input-toggle .toggle-thumb{
+  position:absolute; top:4px; left:4px; width:calc(50% - 4px); height:calc(100% - 8px);
+  border-radius:99px; background:linear-gradient(135deg,var(--a1),#5b8cff);
+  box-shadow:0 8px 20px rgba(124,92,255,.45);
+  transition:transform .28s cubic-bezier(.4,0,.2,1), background .2s;
+}
+.input-toggle.mic-active .toggle-thumb{ transform:translateX(100%); background:linear-gradient(135deg,#ff6b8a,var(--a1)); box-shadow:0 8px 20px rgba(251,113,133,.4); }
+.input-toggle:disabled{ opacity:.5; cursor:not-allowed; }
 
-.mic-status{ font-weight:700; font-size:14px; color:var(--text); min-height:18px; }
-.mic-status.listening{ color:var(--bad); }
-.mic-transcript{ color:var(--a2); font-weight:600; font-size:15px; min-height:20px; word-break:break-word; max-width:100%; }
-.mic-transcript.interim{ color:var(--muted); font-style:italic; }
-.mic-hint{ color:var(--faint); font-size:12px; }
+.mic-panel{ margin-top:14px; display:flex; flex-direction:column; align-items:stretch; gap:14px; padding:0; }
 .mic-panel.hidden{ display:none !important; }
 .guess-row.mic-hidden{ display:none !important; }
+.mic-card{
+  display:flex; flex-direction:column; align-items:center; gap:18px;
+  padding:28px 20px 22px;
+  border-radius:20px; background:var(--card); border:1px solid var(--line);
+  backdrop-filter:blur(8px); text-align:center;
+  box-shadow:0 12px 32px rgba(0,0,0,0.25);
+}
+.mic-big{
+  position:relative; width:108px; height:108px; border-radius:50%; border:0; cursor:pointer;
+  background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff; font-size:42px;
+  display:grid; place-items:center; box-shadow:0 12px 32px rgba(124,92,255,.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:transform .14s, filter .14s, box-shadow .2s;
+}
+.mic-big:hover{ transform:translateY(-3px); filter:brightness(1.06); box-shadow:0 16px 36px rgba(124,92,255,.6); }
+.mic-big:active{ transform:scale(.97); }
+.mic-big.listening{ animation:pulseMic 1s ease infinite; background:linear-gradient(135deg,var(--bad),#ff7a5c); box-shadow:0 12px 32px rgba(251,113,133,.5); }
+.mic-big:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+.mic-icon{ position:relative; z-index:1; filter:drop-shadow(0 1px 6px rgba(0,0,0,.3)); }
+.mic-pulse, .mic-pulse2{
+  position:absolute; inset:-8px; border-radius:50%; border:2px solid var(--a1); opacity:0; pointer-events:none;
+}
+.mic-pulse2{ inset:-16px; border-width:1px; }
+.mic-big.listening .mic-pulse{ animation:micRing 1.4s ease-out infinite; border-color:rgba(251,113,133,.9); }
+.mic-big.listening .mic-pulse2{ animation:micRing 1.4s 0.3s ease-out infinite; border-color:rgba(255,122,92,.55); }
+@keyframes pulseMic{ 0%,100%{ box-shadow:0 12px 32px rgba(124,92,255,.5);} 50%{ box-shadow:0 16px 40px rgba(124,92,255,.75);} }
+@keyframes micRing{ 0%{ transform:scale(.88); opacity:.65;} 100%{ transform:scale(1.45); opacity:0;} }
+.mic-copy{ display:flex; flex-direction:column; gap:8px; max-width:100%; }
+.mic-status{ font-weight:700; font-size:16px; color:var(--text); min-height:20px; letter-spacing:-.2px; }
+.mic-status.listening{ color:var(--bad); }
+.mic-transcript{ color:var(--a2); font-weight:700; font-size:16px; min-height:22px; word-break:break-word; max-width:100%; line-height:1.35; }
+.mic-transcript.interim{ color:var(--muted); font-style:italic; font-weight:600; }
+.mic-hint{ color:var(--muted); font-size:13px; line-height:1.4; }
+.mic-visualizer{ display:flex; align-items:center; justify-content:center; gap:5px; height:22px; opacity:0; transition:opacity .2s; }
+.mic-panel.listening .mic-visualizer{ opacity:1; }
+.mic-visualizer span{ width:4px; height:14px; border-radius:99px; background:linear-gradient(180deg,var(--a1),var(--a2)); opacity:.9; }
+.mic-panel.listening .mic-visualizer span{ animation:micBar .6s ease infinite; }
+.mic-panel.listening .mic-visualizer span:nth-child(2){ animation-delay:.1s; }
+.mic-panel.listening .mic-visualizer span:nth-child(3){ animation-delay:.2s; }
+.mic-panel.listening .mic-visualizer span:nth-child(4){ animation-delay:.15s; }
+.mic-panel.listening .mic-visualizer span:nth-child(5){ animation-delay:.05s; }
+@keyframes micBar{ 0%,100%{ height:14px; opacity:.9;} 50%{ height:22px; opacity:1;} }
+@media (max-width:480px){
+  .input-toggle-wrap{ padding:10px 10px 10px 12px; }
+  .input-toggle{ width:58vw; height:42px; }
+  .mic-card{ padding:24px 16px 18px; }
+  .mic-big{ width:94px; height:94px; font-size:36px; }
+}
 
 .load-error {
   margin-top: 18px;

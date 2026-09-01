@@ -84,25 +84,34 @@
     <p id="desc"></p>
     <p id="hint" class="hidden"></p>
 
-    <div class="input-mode-toggle" role="tablist" aria-label="Input mode">
-      <button id="btn-mode-text" class="mode-btn active" role="tab" aria-selected="true" type="button">⌨️ Text</button>
-      <button id="btn-mode-mic" class="mode-btn" role="tab" aria-selected="false" type="button">🎤 Mic</button>
+    <div class="input-toggle-wrap" title="Same scoring both modes. Keyboard = type, Mic = speak. Mic needs microphone permission + HTTPS. Best in Chrome/Edge. Hover for info.">
+      <span class="input-toggle-label">Input <span class="info-dot">ⓘ</span></span>
+      <button id="input-toggle" class="input-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle between Keyboard and Mic">
+        <span class="toggle-opt is-text" data-mode="text">⌨️ Keyboard</span>
+        <span class="toggle-thumb" aria-hidden="true"></span>
+        <span class="toggle-opt is-mic" data-mode="mic">🎤 Mic</span>
+      </button>
     </div>
 
     <form id="form-guess" class="guess-row" autocomplete="off">
       <input id="guess-input" type="text" maxlength="60" placeholder="Type your guess…" spellcheck="false" autocomplete="off">
       <button id="btn-guess" class="btn" type="submit">Guess</button>
-      <button id="btn-mic-inline" class="btn mic-inline" type="button" title="Voice guess" aria-label="Voice guess">🎤</button>
     </form>
 
     <div id="mic-panel" class="mic-panel hidden">
-      <button id="btn-mic" class="mic-big" type="button" aria-label="Tap to speak">
-        <span class="mic-icon">🎤</span>
-        <span class="mic-pulse" aria-hidden="true"></span>
-      </button>
-      <div id="mic-status" class="mic-status">Tap the mic and say the answer</div>
-      <div id="mic-transcript" class="mic-transcript" aria-live="polite"></div>
-      <div id="mic-hint" class="mic-hint">Hands-free — same scoring as typing · Works for images, math & quotes</div>
+      <div class="mic-card">
+        <button id="btn-mic" class="mic-big" type="button" aria-label="Tap to speak">
+          <span class="mic-icon">🎤</span>
+          <span class="mic-pulse" aria-hidden="true"></span>
+          <span class="mic-pulse2" aria-hidden="true"></span>
+        </button>
+        <div class="mic-copy">
+          <div id="mic-status" class="mic-status">Tap the mic and say the answer</div>
+          <div id="mic-transcript" class="mic-transcript" aria-live="polite"></div>
+          <div id="mic-hint" class="mic-hint">Hands-free — same scoring as typing · Works for images, math & quotes</div>
+        </div>
+      </div>
+      <div class="mic-visualizer" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
     <div class="meta-row">
       <button id="btn-hint" class="btn ghost" type="button">💡 Hint (−30)</button>
