@@ -152,8 +152,11 @@ function shuffle(arr) {
 }
 
 function buildCuratedQueue() {
-  const byTier = (n) => shuffle(CURATED_ITEMS.filter((i) => i.tier === n));
-  curatedQueue = byTier(1).concat(byTier(2)).concat(byTier(3));
+  // Fully random uniform shuffle across all tiers/categories.
+  // Previously this was tier-ordered (1→2→3) + pop() which meant
+  // tier-3 hard items always appeared first and tier-1 rarely,
+  // making early games feel identical despite 800+ items.
+  curatedQueue = shuffle(CURATED_ITEMS);
 }
 
 function upscale(src) {
@@ -343,6 +346,11 @@ async function nextRandom() {
 }
 
 async function obtainItem() {
+  // 15% chance to inject a truly random Wikipedia article for variety
+  if (Math.random() < 0.15) {
+    const rnd = await nextRandom();
+    if (rnd) return rnd;
+  }
   return (await nextCurated()) || (await nextRandom());
 }
 

@@ -1,0 +1,491 @@
+{
+  "version": 1,
+  "apis": [
+    {
+      "id": "mtieo8jbdb7h4a",
+      "name": "$",
+      "type": "js",
+      "code": "const $ = (id) => document.getElementById(id);",
+      "description": "Extracted arrow function from file",
+      "createdAt": 1788251334455,
+      "updatedAt": 1788251334455
+    },
+    {
+      "id": "mtieo8jsz46t70",
+      "name": "esc",
+      "type": "js",
+      "code": "const esc = (s) => String(s).replace(/[&<>\"']/g, (c) => ({ \"&\": \"&amp;\", \"<\": \"&lt;\", \">\": \"&gt;\", '\"': \"&quot;\", \"'\": \"&#39;\" }[c]));",
+      "description": "Extracted arrow function from file",
+      "createdAt": 1788251334472,
+      "updatedAt": 1788251334472
+    },
+    {
+      "id": "mtieo8k9hu4u96",
+      "name": "normalize",
+      "type": "js",
+      "code": "function normalize(s) {\n  let n = (s || \"\").toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\");\n  n = n.replace(/&/g, \" and \");\n  n = n.replace(/[^a-z0-9\\s]/g, \" \").replace(/\\s+/g, \" \").trim();\n  while (n.startsWith(\"the \")) n = n.slice(4);\n  return n.trim();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334489,
+      "updatedAt": 1788251334489
+    },
+    {
+      "id": "mtieo8kmg633v6",
+      "name": "lev",
+      "type": "js",
+      "code": "function lev(a, b) {\n  const m = a.length, n = b.length;\n  if (!m) return n;\n  if (!n) return m;\n  let prev = Array.from({ length: n + 1 }, (_, i) => i);\n  for (let i = 1; i <= m; i++) {\n    const cur = [i];\n    for (let j = 1; j <= n; j++) {\n      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));\n    }\n    prev = cur;\n  }\n  return prev[n];\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334502,
+      "updatedAt": 1788251334502
+    },
+    {
+      "id": "mtieo8l5fx21cs",
+      "name": "isMatch",
+      "type": "js",
+      "code": "function isMatch(input, item) {\n  const n = normalize(input);\n  if (!n) return false;\n  const cands = [item.answer].concat(item.aliases || []).map(normalize).filter(Boolean);\n  for (const c of cands) {\n    if (n === c) return true;\n    const minLen = Math.min(n.length, c.length);\n    if (minLen >= 5 && Math.abs(n.length - c.length) <= 3) {\n      if (lev(n, c) <= (minLen >= 9 ? 2 : 1)) return true;\n    }\n    if (n.length <= c.length + 18) {\n      const toks = c.split(\" \").filter((t) => t.length >= 3);\n      if (toks.length && toks.every((t) => n.includes(t))) return true;\n    }\n  }\n  return false;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334521,
+      "updatedAt": 1788251334521
+    },
+    {
+      "id": "mtieo8lygdtwv5",
+      "name": "beep",
+      "type": "js",
+      "code": "function beep(freq, dur, type, gain, when) {\n  if (muted) return;\n  try {\n    AC = AC || new (window.AudioContext || window.webkitAudioContext)();\n    const o = AC.createOscillator();\n    const g = AC.createGain();\n    o.type = type || \"sine\";\n    o.frequency.value = freq;\n    o.connect(g);\n    g.connect(AC.destination);\n    const t = AC.currentTime + (when || 0);\n    const d = dur || 0.12;\n    g.gain.setValueAtTime(gain || 0.14, t);\n    g.gain.exponentialRampToValueAtTime(0.0001, t + d);\n    o.start(t);\n    o.stop(t + d + 0.05);\n  } catch (e) { /* audio unavailable */ }\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334550,
+      "updatedAt": 1788251334550
+    },
+    {
+      "id": "mtieo8muculjoa",
+      "name": "correct",
+      "type": "js",
+      "code": "  correct() { beep(523, 0.12, \"sine\", 0.15); beep(659, 0.12, \"sine\", 0.15, 0.1); beep(784, 0.22, \"sine\", 0.15, 0.2); },",
+      "description": "Extracted method from file",
+      "createdAt": 1788251334582,
+      "updatedAt": 1788251334582
+    },
+    {
+      "id": "mtieo8oaqfvt8j",
+      "name": "wrong",
+      "type": "js",
+      "code": "  wrong() { beep(196, 0.32, \"sawtooth\", 0.1); },",
+      "description": "Extracted method from file",
+      "createdAt": 1788251334634,
+      "updatedAt": 1788251334634
+    },
+    {
+      "id": "mtieo8pm0bz39z",
+      "name": "skip",
+      "type": "js",
+      "code": "  skip() { beep(330, 0.1, \"triangle\", 0.08); },",
+      "description": "Extracted method from file",
+      "createdAt": 1788251334682,
+      "updatedAt": 1788251334682
+    },
+    {
+      "id": "mtieo8qlq036tg",
+      "name": "hint",
+      "type": "js",
+      "code": "  hint() { beep(440, 0.08, \"triangle\", 0.08); },",
+      "description": "Extracted method from file",
+      "createdAt": 1788251334717,
+      "updatedAt": 1788251334717
+    },
+    {
+      "id": "mtieo8rl7t0c9l",
+      "name": "over",
+      "type": "js",
+      "code": "  over() { beep(392, 0.2, \"triangle\", 0.12); beep(311, 0.25, \"triangle\", 0.12, 0.18); beep(233, 0.45, \"triangle\", 0.12, 0.36); }",
+      "description": "Extracted method from file",
+      "createdAt": 1788251334753,
+      "updatedAt": 1788251334753
+    },
+    {
+      "id": "mtieo8sdvbh0ds",
+      "name": "shuffle",
+      "type": "js",
+      "code": "function shuffle(arr) {\n  const a = arr.slice();\n  for (let i = a.length - 1; i > 0; i--) {\n    const j = (Math.random() * (i + 1)) | 0;\n    const t = a[i]; a[i] = a[j]; a[j] = t;\n  }\n  return a;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334781,
+      "updatedAt": 1788251334781
+    },
+    {
+      "id": "mtieo8t8axck3c",
+      "name": "buildCuratedQueue",
+      "type": "js",
+      "code": "function buildCuratedQueue() {\n  // Fully random uniform shuffle across all tiers/categories.\n  // Previously this was tier-ordered (1→2→3) + pop() which meant\n  // tier-3 hard items always appeared first and tier-1 rarely,\n  // making early games feel identical despite 800+ items.\n  curatedQueue = shuffle(CURATED_ITEMS);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334812,
+      "updatedAt": 1788251334812
+    },
+    {
+      "id": "mtieo8u6cu5gxb",
+      "name": "upscale",
+      "type": "js",
+      "code": "function upscale(src) {\n  return src.replace(/\\/(\\d{2,4})px-/, (m, w) => \"/\" + Math.min(+w * 2, 640) + \"px-\");\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334846,
+      "updatedAt": 1788251334846
+    },
+    {
+      "id": "mtieo8vnzapbdj",
+      "name": "loadImg",
+      "type": "js",
+      "code": "function loadImg(src) {\n  return new Promise((res, rej) => {\n    const i = new Image();\n    i.onload = () => res(i);\n    i.onerror = () => rej(new Error(\"img fail\"));\n    i.referrerPolicy = \"no-referrer\";\n    i.src = src;\n  });\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334899,
+      "updatedAt": 1788251334899
+    },
+    {
+      "id": "mtieo8wufh956l",
+      "name": "sleep",
+      "type": "js",
+      "code": "function sleep(ms) {\n  return new Promise((r) => setTimeout(r, ms));\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251334942,
+      "updatedAt": 1788251334942
+    },
+    {
+      "id": "mtieo8xveyuqg6",
+      "name": "fetchWiki",
+      "type": "js",
+      "code": "async function fetchWiki(title, attempt) {\n  attempt = attempt || 0;\n  try {\n    const url = \"https://en.wikipedia.org/api/rest_v1/page/summary/\" + encodeURIComponent(title) + \"?redirect=true\";\n    const r = await fetch(url, { headers: { Accept: \"application/json\" } });\n    if (r.status === 429 && attempt < 2) {\n      await sleep(900);\n      return fetchWiki(title, attempt + 1);\n    }\n    if (!r.ok) throw new Error(\"http \" + r.status);\n    return await r.json();\n  } catch (e) {\n    if (attempt < 1) {\n      await sleep(700);\n      return fetchWiki(title, attempt + 1);\n    }\n    throw e;\n  }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251334979,
+      "updatedAt": 1788251334979
+    },
+    {
+      "id": "mtieo8zptovh2b",
+      "name": "tryImg",
+      "type": "js",
+      "code": "async function tryImg(hi, lo) {\n  try { return await loadImg(hi); } catch (e) { return await loadImg(lo); }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335045,
+      "updatedAt": 1788251335045
+    },
+    {
+      "id": "mtieo90yob4y9c",
+      "name": "fetchWikidataP18",
+      "type": "js",
+      "code": "async function fetchWikidataP18(qid) {\n  try {\n    const url = \"https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&origin=*&entity=\" + encodeURIComponent(qid) + \"&property=P18\";\n    const r = await fetch(url);\n    if (!r.ok) return null;\n    const d = await r.json();\n    const claims = d.claims && d.claims.P18;\n    if (!claims || !claims.length) return null;\n    const snak = claims[0].mainsnak;\n    if (!snak || snak.snaktype !== \"value\" || !snak.datavalue) return null;\n    return snak.datavalue.value;\n  } catch (e) { return null; }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335090,
+      "updatedAt": 1788251335090
+    },
+    {
+      "id": "mtieo92ongijvx",
+      "name": "commonsThumb",
+      "type": "js",
+      "code": "async function commonsThumb(fileTitle) {\n  try {\n    const url = \"https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=imageinfo&iiprop=url&iiurlwidth=480&titles=\" + encodeURIComponent(fileTitle);\n    const r = await fetch(url);\n    if (!r.ok) return null;\n    const d = await r.json();\n    const pages = d.query && d.query.pages;\n    if (!pages) return null;\n    for (const k in pages) {\n      const ii = pages[k].imageinfo && pages[k].imageinfo[0];\n      if (ii && ii.thumburl) return ii.thumburl;\n    }\n    return null;\n  } catch (e) { return null; }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335152,
+      "updatedAt": 1788251335152
+    },
+    {
+      "id": "mtieo9442nrz70",
+      "name": "searchCommons",
+      "type": "js",
+      "code": "async function searchCommons(query) {\n  try {\n    const url = \"https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=\" + encodeURIComponent(query) + \"&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=480\";\n    const r = await fetch(url);\n    if (!r.ok) return null;\n    const d = await r.json();\n    const pages = d.query && d.query.pages;\n    if (!pages) return null;\n    const list = Object.keys(pages).map((k) => pages[k]).sort((a, b) => (a.index || 0) - (b.index || 0));\n    for (const p of list) {\n      const ii = p.imageinfo && p.imageinfo[0];\n      if (!ii || !ii.thumburl) continue;\n      if ((ii.width || 0) < 220 || (ii.height || 0) < 150) continue;\n      return ii.thumburl;\n    }\n    return null;\n  } catch (e) { return null; }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335204,
+      "updatedAt": 1788251335204
+    },
+    {
+      "id": "mtieo9560982r0",
+      "name": "resolveImageFor",
+      "type": "js",
+      "code": "async function resolveImageFor(base) {\n  let desc = \"\";\n  try {\n    const data = await fetchWiki(base.wiki || base.answer);\n    desc = data.description || \"\";\n    const src = data.thumbnail && data.thumbnail.source;\n    if (src) {\n      const img = await tryImg(upscale(src), src);\n      return { desc, imgURL: img.src };\n    }\n    const qid = data.wikibase_item;\n    if (qid) {\n      const file = await fetchWikidataP18(qid);\n      if (file) {\n        const t = await commonsThumb(file);\n        if (t) {\n          const img = await tryImg(upscale(t), t);\n          return { desc, imgURL: img.src };\n        }\n      }\n    }\n  } catch (e) { /* fall through to commons search */ }\n  const s = await searchCommons(base.search || base.answer);\n  if (s) {\n    const img = await tryImg(upscale(s), s);\n    return { desc: desc || base.desc || \"\", imgURL: img.src };\n  }\n  return null;\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335242,
+      "updatedAt": 1788251335242
+    },
+    {
+      "id": "mtieo968rc65fj",
+      "name": "nextCurated",
+      "type": "js",
+      "code": "async function nextCurated() {\n  if (!curatedQueue.length) return null;\n  const base = curatedQueue.pop();\n  if (base.type === \"text\") {\n    return {\n      answer: base.answer,\n      aliases: (base.aliases || []).slice(),\n      category: base.category,\n      desc: base.desc || \"\",\n      text: base.text,\n      mode: base.mode || \"quote\",\n      imgURL: null\n    };\n  }\n  try {\n    const res = await resolveImageFor(base);\n    if (!res) {\n      const c = (failedCount.get(base.answer) || 0) + 1;\n      failedCount.set(base.answer, c);\n      if (c < 2) curatedQueue.unshift(base);\n      return null;\n    }\n    usedTitles.add(base.answer);\n    return {\n      answer: base.answer,\n      aliases: (base.aliases || []).slice(),\n      category: base.category,\n      desc: res.desc,\n      imgURL: res.imgURL\n    };\n  } catch (e) {\n    const c = (failedCount.get(base.answer) || 0) + 1;\n    failedCount.set(base.answer, c);\n    if (c < 2) curatedQueue.unshift(base);\n    return null;\n  }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335280,
+      "updatedAt": 1788251335280
+    },
+    {
+      "id": "mtieo97ho9xl9f",
+      "name": "nextRandom",
+      "type": "js",
+      "code": "async function nextRandom() {\n  for (let i = 0; i < 6; i++) {\n    try {\n      const r = await fetch(\"https://en.wikipedia.org/api/rest_v1/page/random/summary\");\n      if (!r.ok) { await sleep(800); continue; }\n      const d = await r.json();\n      if (d.type !== \"standard\") continue;\n      if (!d.thumbnail || !d.thumbnail.source) continue;\n      if (!d.description || d.description.length < 8) continue;\n      const t = d.title || \"\";\n      if (/^(list of|index of|outline of|talk:|portal:|wikipedia:|special:)/i.test(t)) continue;\n      if (usedTitles.has(t)) continue;\n      usedTitles.add(t);\n      const stripped = t.replace(/\\s*\\([^)]*\\)\\s*$/, \"\").trim();\n      const aliases = stripped && stripped.toLowerCase() !== t.toLowerCase() ? [stripped] : [];\n      let img;\n      try { img = await loadImg(upscale(d.thumbnail.source)); } catch (e) { img = await loadImg(d.thumbnail.source); }\n      return { answer: t, aliases, category: \"Anything\", desc: d.description || \"\", imgURL: img.src };\n    } catch (e) {\n      await sleep(500);\n    }\n  }\n  return null;\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335325,
+      "updatedAt": 1788251335325
+    },
+    {
+      "id": "mtieo98gwh2mgp",
+      "name": "obtainItem",
+      "type": "js",
+      "code": "async function obtainItem() {\n  // 15% chance to inject a truly random Wikipedia article for variety\n  if (Math.random() < 0.15) {\n    const rnd = await nextRandom();\n    if (rnd) return rnd;\n  }\n  return (await nextCurated()) || (await nextRandom());\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335360,
+      "updatedAt": 1788251335360
+    },
+    {
+      "id": "mtieo99rvc623v",
+      "name": "ensureQueue",
+      "type": "js",
+      "code": "async function ensureQueue() {\n  if (filling) return;\n  filling = true;\n  try {\n    while (queue.length < 2) {\n      const it = await obtainItem();\n      if (!it) break;\n      queue.push(it);\n    }\n  } finally {\n    filling = false;\n  }\n  if (state.waiting) {\n    if (queue.length) startRound();\n    else showLoadError();\n  }\n}",
+      "description": "Extracted async function from file",
+      "createdAt": 1788251335407,
+      "updatedAt": 1788251335407
+    },
+    {
+      "id": "mtieo9b3ve12kb",
+      "name": "updateHUD",
+      "type": "js",
+      "code": "function updateHUD() {\n  el.score.textContent = state.score;\n  el.round.textContent = Math.max(1, state.round);\n  el.streak.textContent = state.streak;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335455,
+      "updatedAt": 1788251335455
+    },
+    {
+      "id": "mtieo9cgjxwroe",
+      "name": "renderTime",
+      "type": "js",
+      "code": "function renderTime() {\n  el.timeVal.textContent = Math.ceil(state.time);\n  const pct = Math.max(0, Math.min(100, (state.time / MAX_TIME) * 100));\n  el.globalFill.style.width = pct + \"%\";\n  const low = state.time < 15;\n  el.globalFill.classList.toggle(\"low\", low);\n  el.timeChip.classList.toggle(\"low\", low);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335504,
+      "updatedAt": 1788251335504
+    },
+    {
+      "id": "mtieo9e3spwduy",
+      "name": "floatTime",
+      "type": "js",
+      "code": "function floatTime(sec) {\n  el.timeFloat.textContent = (sec > 0 ? \"+\" : \"−\") + Math.abs(sec) + \"s\";\n  el.timeFloat.className = \"\";\n  void el.timeFloat.offsetWidth;\n  el.timeFloat.className = sec > 0 ? \"gain\" : \"loss\";\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335563,
+      "updatedAt": 1788251335563
+    },
+    {
+      "id": "mtieo9fi3nmx1v",
+      "name": "startGlobal",
+      "type": "js",
+      "code": "function startGlobal() {\n  if (gRunning || state.time <= 0) return;\n  gEnd = performance.now() + state.time * 1000;\n  gRunning = true;\n  tickGlobal();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335614,
+      "updatedAt": 1788251335614
+    },
+    {
+      "id": "mtieo9gpf7o1kb",
+      "name": "tickGlobal",
+      "type": "js",
+      "code": "function tickGlobal() {\n  if (!gRunning) return;\n  const left = Math.max(0, gEnd - performance.now());\n  state.time = left / 1000;\n  renderTime();\n  if (left <= 0) { gRunning = false; onGlobalExpired(); return; }\n  gRaf = requestAnimationFrame(tickGlobal);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335657,
+      "updatedAt": 1788251335657
+    },
+    {
+      "id": "mtieo9iq8lxbut",
+      "name": "stopGlobal",
+      "type": "js",
+      "code": "function stopGlobal() {\n  if (!gRunning) { renderTime(); return; }\n  gRunning = false;\n  cancelAnimationFrame(gRaf);\n  state.time = Math.max(0, (gEnd - performance.now()) / 1000);\n  renderTime();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335730,
+      "updatedAt": 1788251335730
+    },
+    {
+      "id": "mtieo9l6f27bpz",
+      "name": "adjustTime",
+      "type": "js",
+      "code": "function adjustTime(sec) {\n  stopGlobal();\n  state.time = Math.max(0, Math.min(MAX_TIME, state.time + sec));\n  renderTime();\n  floatTime(sec);\n  if (sec > 0 && state.time > 0) startGlobal();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335818,
+      "updatedAt": 1788251335818
+    },
+    {
+      "id": "mtieo9mxab9bhs",
+      "name": "onGlobalExpired",
+      "type": "js",
+      "code": "function onGlobalExpired() {\n  stopTimer();\n  state.locked = true;\n  el.input.disabled = true;\n  el.btnGuess.disabled = true;\n  sfx.over();\n  setTimeout(gameOver, 350);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335881,
+      "updatedAt": 1788251335881
+    },
+    {
+      "id": "mtieo9p27tvx5s",
+      "name": "showScreen",
+      "type": "js",
+      "code": "function showScreen(s) {\n  el.start.classList.add(\"hidden\");\n  el.game.classList.add(\"hidden\");\n  el.over.classList.add(\"hidden\");\n  s.classList.remove(\"hidden\");\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251335958,
+      "updatedAt": 1788251335958
+    },
+    {
+      "id": "mtieo9r3qqtobp",
+      "name": "refreshBestChip",
+      "type": "js",
+      "code": "function refreshBestChip() {\n  if (state.best > 0) {\n    el.chipBest.classList.remove(\"hidden\");\n    el.bestVal.textContent = state.best;\n  }\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336031,
+      "updatedAt": 1788251336031
+    },
+    {
+      "id": "mtieo9tk0feeev",
+      "name": "setOverlay",
+      "type": "js",
+      "code": "function setOverlay(emoji, title, subHtml, cls) {\n  el.ovEmoji.textContent = emoji;\n  el.ovTitle.textContent = title;\n  el.ovSub.innerHTML = subHtml;\n  el.overlay.className = \"overlay show\" + (cls ? \" \" + cls : \"\");\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336120,
+      "updatedAt": 1788251336120
+    },
+    {
+      "id": "mtieo9vgwte9y2",
+      "name": "hideOverlay",
+      "type": "js",
+      "code": "function hideOverlay() {\n  el.overlay.className = \"overlay\";\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336188,
+      "updatedAt": 1788251336188
+    },
+    {
+      "id": "mtieo9y83x0ix0",
+      "name": "showLoadError",
+      "type": "js",
+      "code": "function showLoadError() {\n  el.card.classList.remove(\"loading\");\n  el.category.textContent = \"OFFLINE?\";\n  el.loadError.classList.remove(\"hidden\");\n  state.locked = true;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336288,
+      "updatedAt": 1788251336288
+    },
+    {
+      "id": "mtieoa0gk75w75",
+      "name": "startTimer",
+      "type": "js",
+      "code": "function startTimer(sec, onTimeout) {\n  const dur = sec * 1000;\n  const end = performance.now() + dur;\n  let running = true;\n  const tick = () => {\n    if (!running) return;\n    const left = Math.max(0, end - performance.now());\n    const ratio = left / dur;\n    el.timerFill.style.width = ratio * 100 + \"%\";\n    el.timerFill.classList.toggle(\"low\", ratio <= 0.35);\n    el.timerSecs.textContent = Math.ceil(left / 1000) + \"s\";\n    if (left <= 0) { running = false; onTimeout(); return; }\n    requestAnimationFrame(tick);\n  };\n  tick();\n  return () => { running = false; };\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336368,
+      "updatedAt": 1788251336368
+    },
+    {
+      "id": "mtieoa31adey9i",
+      "name": "stopTimer",
+      "type": "js",
+      "code": "let stopTimer = () => {};",
+      "description": "Extracted arrow function from file",
+      "createdAt": 1788251336461,
+      "updatedAt": 1788251336461
+    },
+    {
+      "id": "mtieoa5dq7vnal",
+      "name": "setupHint",
+      "type": "js",
+      "code": "function setupHint() {\n  state.hintFlags = state.item.answer.split(\"\").map((ch) => !/[a-z0-9]/i.test(ch));\n  el.hint.classList.add(\"hidden\");\n  el.btnHint.disabled = false;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336545,
+      "updatedAt": 1788251336545
+    },
+    {
+      "id": "mtieoa7iq3e3rn",
+      "name": "renderHint",
+      "type": "js",
+      "code": "function renderHint() {\n  const s = state.item.answer.split(\"\").map((ch, i) => (state.hintFlags[i] ? ch : \"•\")).join(\"\");\n  el.hint.textContent = s;\n  el.hint.classList.remove(\"hidden\");\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336622,
+      "updatedAt": 1788251336622
+    },
+    {
+      "id": "mtieoa9gukrkjf",
+      "name": "useHint",
+      "type": "js",
+      "code": "function useHint() {\n  if (state.locked || !state.item) return;\n  const idx = state.hintFlags.indexOf(false);\n  if (idx < 0) return;\n  state.hintFlags[idx] = true;\n  state.score = Math.max(0, state.score - 30);\n  updateHUD();\n  renderHint();\n  sfx.hint();\n  if (state.hintFlags.indexOf(false) < 0) el.btnHint.disabled = true;\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336692,
+      "updatedAt": 1788251336692
+    },
+    {
+      "id": "mtieoabjhlkarj",
+      "name": "roundSeconds",
+      "type": "js",
+      "code": "function roundSeconds() {\n  return Math.max(8, 16 - Math.floor((state.round - 1) / 4));\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336767,
+      "updatedAt": 1788251336767
+    },
+    {
+      "id": "mtieoadvmw79rd",
+      "name": "startRound",
+      "type": "js",
+      "code": "function startRound() {\n  state.waiting = false;\n  state.item = queue.shift();\n  ensureQueue();\n  state.locked = false;\n  state.round++;\n  updateHUD();\n  setupHint();\n  hideOverlay();\n  el.loadError.classList.add(\"hidden\");\n  el.card.classList.remove(\"shake\");\n  el.card.classList.remove(\"pop\");\n  void el.card.offsetWidth;\n  el.card.classList.add(\"pop\");\n  el.card.classList.remove(\"loading\");\n  const isText = !!state.item.text;\n  el.card.classList.toggle(\"textmode\", isText);\n  if (isText) {\n    el.card.classList.remove(\"ready\");\n    el.cardText.textContent = state.item.text;\n    el.cardText.dataset.mode = state.item.mode || \"quote\";\n  } else {\n    el.cardImg.src = state.item.imgURL;\n    el.cardBg.style.backgroundImage = \"url(\\\"\" + state.item.imgURL + \"\\\")\";\n    el.card.classList.add(\"ready\");\n  }\n  el.category.textContent = state.item.category;\n  el.desc.textContent = state.item.desc || \"\";\n  el.timerFill.style.width = \"100%\";\n  el.timerFill.classList.remove(\"low\");\n  el.input.value = \"\";\n  el.input.disabled = false;\n  el.btnGuess.disabled = false;\n  el.input.focus();\n  stopTimer = startTimer(roundSeconds(), onTimeout);\n  startGlobal();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336851,
+      "updatedAt": 1788251336851
+    },
+    {
+      "id": "mtieoagb2wmcqy",
+      "name": "advance",
+      "type": "js",
+      "code": "function advance() {\n  if (state.time <= 0) { gameOver(); return; }\n  if (queue.length) startRound();\n  else {\n    state.waiting = true;\n    state.locked = true;\n    el.card.classList.remove(\"ready\");\n    el.card.classList.remove(\"textmode\");\n    el.card.classList.add(\"loading\");\n    el.category.textContent = \"LOADING…\";\n    el.desc.textContent = \"\";\n    ensureQueue();\n  }\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251336939,
+      "updatedAt": 1788251336939
+    },
+    {
+      "id": "mtieoai8grl5ok",
+      "name": "onCorrect",
+      "type": "js",
+      "code": "function onCorrect() {\n  state.locked = true;\n  stopTimer();\n  const leftRatio = Math.max(0, parseFloat(el.timerFill.style.width) / 100);\n  state.streak++;\n  state.correct++;\n  state.bestStreak = Math.max(state.bestStreak, state.streak);\n  const pts = 100 + Math.round(leftRatio * roundSeconds()) * 5 + (state.streak - 1) * 25;\n  state.score += pts;\n  updateHUD();\n  adjustTime(6);\n  sfx.correct();\n  if (window.confetti) {\n    window.confetti({ particleCount: 110, spread: 75, origin: { y: 0.6 } });\n  }\n  setOverlay(\"🎉\", \"Correct!\", \"+\" + pts + \" · ⏱ +6s\" + (state.streak > 1 ? \" · 🔥 \" + state.streak + \" in a row\" : \"\"), \"good\");\n  setTimeout(advance, 1400);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337008,
+      "updatedAt": 1788251337008
+    },
+    {
+      "id": "mtieoak86fyril",
+      "name": "onWrong",
+      "type": "js",
+      "code": "function onWrong() {\n  state.locked = true;\n  stopTimer();\n  state.streak = 0;\n  updateHUD();\n  adjustTime(-5);\n  sfx.wrong();\n  el.card.classList.remove(\"shake\");\n  void el.card.offsetWidth;\n  el.card.classList.add(\"shake\");\n  setOverlay(\"💀\", \"Nope!\", \"It was <b>\" + esc(state.item.answer) + \"</b> · ⏱ −5s\", \"bad\");\n  setTimeout(advance, 2300);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337080,
+      "updatedAt": 1788251337080
+    },
+    {
+      "id": "mtieoamoe0a8zh",
+      "name": "onTimeout",
+      "type": "js",
+      "code": "function onTimeout() {\n  state.locked = true;\n  state.streak = 0;\n  updateHUD();\n  adjustTime(-5);\n  sfx.wrong();\n  setOverlay(\"⏰\", \"Time's up!\", \"It was <b>\" + esc(state.item.answer) + \"</b> · ⏱ −5s\", \"bad\");\n  setTimeout(advance, 2300);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337168,
+      "updatedAt": 1788251337168
+    },
+    {
+      "id": "mtieoaol4umjml",
+      "name": "onSkip",
+      "type": "js",
+      "code": "function onSkip() {\n  if (state.locked || !state.item) return;\n  state.locked = true;\n  stopTimer();\n  state.streak = 0;\n  updateHUD();\n  adjustTime(-2);\n  sfx.skip();\n  setOverlay(\"🤝\", \"Skipped\", \"It was <b>\" + esc(state.item.answer) + \"</b> · ⏱ −2s\", \"\");\n  setTimeout(advance, 1300);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337237,
+      "updatedAt": 1788251337237
+    },
+    {
+      "id": "mtieoaqndirqnh",
+      "name": "startGame",
+      "type": "js",
+      "code": "function startGame() {\n  state.round = 0;\n  state.score = 0;\n  state.streak = 0;\n  state.bestStreak = 0;\n  state.correct = 0;\n  state.time = MAX_TIME;\n  state.item = null;\n  state.locked = true;\n  state.waiting = true;\n  queue.length = 0;\n  usedTitles.clear();\n  buildCuratedQueue();\n  updateHUD();\n  renderTime();\n  el.loadError.classList.add(\"hidden\");\n  el.card.classList.remove(\"ready\");\n  el.card.classList.remove(\"textmode\");\n  el.card.classList.add(\"loading\");\n  el.cardImg.removeAttribute(\"src\");\n  el.cardBg.style.backgroundImage = \"none\";\n  el.category.textContent = \"LOADING…\";\n  el.desc.textContent = \"\";\n  el.timerFill.style.width = \"100%\";\n  showScreen(el.game);\n  ensureQueue();\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337311,
+      "updatedAt": 1788251337311
+    },
+    {
+      "id": "mtieoasmybete5",
+      "name": "gameOver",
+      "type": "js",
+      "code": "function gameOver() {\n  stopGlobal();\n  stopTimer();\n  sfx.over();\n  const isNew = state.score > state.best;\n  if (isNew) {\n    state.best = state.score;\n    localStorage.setItem(\"namit-best\", String(state.best));\n  }\n  refreshBestChip();\n  el.finalScore.textContent = state.score;\n  el.finalBest.textContent = state.best;\n  el.finalRounds.textContent = state.round;\n  el.finalCorrect.textContent = state.correct;\n  el.finalStreak.textContent = state.bestStreak;\n  el.newBest.classList.toggle(\"hidden\", !isNew);\n  if (isNew && window.confetti) {\n    window.confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });\n  }\n  showScreen(el.over);\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337382,
+      "updatedAt": 1788251337382
+    },
+    {
+      "id": "mtieoau278taba",
+      "name": "updateMuteIcon",
+      "type": "js",
+      "code": "function updateMuteIcon() {\n  el.mute.textContent = muted ? \"🔇\" : \"🔊\";\n}",
+      "description": "Extracted function from file",
+      "createdAt": 1788251337434,
+      "updatedAt": 1788251337434
+    }
+  ]
+}
