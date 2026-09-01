@@ -842,13 +842,20 @@ function resetLbOverUI(){
 
 function prepareLbPrompt(){
   resetLbOverUI();
+  // Always show the board after a game so player sees "something popped"
+  // Prompt (submit) is optional and only shown if score > 0
+  try{ showLbBoard(null); }catch(e){ console.warn("lb show failed", e); }
+  if(el.lbBoardWrap) el.lbBoardWrap.classList.remove("hidden");
+  if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "Hide Leaderboard";
   if(state.score <= 0){
     if(el.lbPrompt) el.lbPrompt.classList.add("hidden");
-    if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "🏆 View Internet Leaderboard";
+    if(el.lbRankNote){
+      el.lbRankNote.textContent = "Score 0 — play again and submit to climb the internet!";
+      el.lbRankNote.classList.remove("hidden");
+    }
     return;
   }
   if(el.lbPrompt) el.lbPrompt.classList.remove("hidden");
-  if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "🏆 View Leaderboard (skip submit)";
   if(el.lbName) setTimeout(()=>{ try{el.lbName.focus();}catch(e){}},200);
 }
 
@@ -871,6 +878,7 @@ function gameOver() {
   if (isNew && window.confetti) {
     window.confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
   }
+  console.log("[lb] gameOver score", state.score, "lbPrompt", !!el.lbPrompt, "lbBoard", !!el.lbBoardWrap);
   prepareLbPrompt();
   showScreen(el.over);
   // try to refresh remote board in background if configured
@@ -940,7 +948,7 @@ function handleLbSubmit(){
       else el.lbRankNote.innerHTML = "You are <strong>#"+rank+" / "+lb.length+"</strong> — keep grinding!";
       el.lbRankNote.classList.remove("hidden");
     }
-    if(el.btnViewLbAfter) el.btnViewLbAfter.classList.add("hidden");
+    if(el.btnViewLbAfter){ el.btnViewLbAfter.classList.remove("hidden"); el.btnViewLbAfter.textContent = "Hide Leaderboard"; }
     if(window.confetti) window.confetti({particleCount:120, spread:70, origin:{y:0.6}});
   }, 400);
 }
@@ -949,8 +957,9 @@ function handleLbSkip(){
   setLbMsg("", true);
   el.lbMsg.classList.add("hidden");
   showLbBoard(null);
+  if(el.lbBoardWrap) el.lbBoardWrap.classList.remove("hidden");
   if(el.lbRankNote) el.lbRankNote.classList.add("hidden");
-  if(el.btnViewLbAfter) el.btnViewLbAfter.classList.add("hidden");
+  if(el.btnViewLbAfter){ el.btnViewLbAfter.classList.remove("hidden"); el.btnViewLbAfter.textContent = "Hide Leaderboard"; }
 }
 function handleLbViewToggle(){
   const isHidden = el.lbBoardWrap.classList.contains("hidden");

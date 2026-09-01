@@ -1,0 +1,36 @@
+# Deps — viewer doesn't need these (static GitHub Pages)
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Env / secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Opencode / AI tool cache
+.opencode/
+.opencode-tmp/
+
+# Logs / temp
+logs/
+*.log
+tmp/
+temp/
