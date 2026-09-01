@@ -43,6 +43,7 @@
       <span class="rule">🗺️ Flags & geography</span>
       <span class="rule">📜 History & eras</span>
       <span class="rule">⏱️ 90s clock · ✅ +6s · ❌ −5s</span>
+      <span class="rule">🎤 Mic mode — say it out loud</span>
       <span class="rule">🔥 Streak bonuses</span>
        <span class="rule">♾️ 1000+ things & endless mode</span>
     </div>
@@ -83,10 +84,26 @@
     <p id="desc"></p>
     <p id="hint" class="hidden"></p>
 
+    <div class="input-mode-toggle" role="tablist" aria-label="Input mode">
+      <button id="btn-mode-text" class="mode-btn active" role="tab" aria-selected="true" type="button">⌨️ Text</button>
+      <button id="btn-mode-mic" class="mode-btn" role="tab" aria-selected="false" type="button">🎤 Mic</button>
+    </div>
+
     <form id="form-guess" class="guess-row" autocomplete="off">
       <input id="guess-input" type="text" maxlength="60" placeholder="Type your guess…" spellcheck="false" autocomplete="off">
       <button id="btn-guess" class="btn" type="submit">Guess</button>
+      <button id="btn-mic-inline" class="btn mic-inline" type="button" title="Voice guess" aria-label="Voice guess">🎤</button>
     </form>
+
+    <div id="mic-panel" class="mic-panel hidden">
+      <button id="btn-mic" class="mic-big" type="button" aria-label="Tap to speak">
+        <span class="mic-icon">🎤</span>
+        <span class="mic-pulse" aria-hidden="true"></span>
+      </button>
+      <div id="mic-status" class="mic-status">Tap the mic and say the answer</div>
+      <div id="mic-transcript" class="mic-transcript" aria-live="polite"></div>
+      <div id="mic-hint" class="mic-hint">Hands-free — same scoring as typing · Works for images, math & quotes</div>
+    </div>
     <div class="meta-row">
       <button id="btn-hint" class="btn ghost" type="button">💡 Hint (−30)</button>
       <button id="btn-skip" class="btn ghost" type="button">Skip ⏭</button>
