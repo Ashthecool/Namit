@@ -478,7 +478,35 @@ function handleMicFinal(text){
   if(isMatch(t, state.item) || (extra && isMatch(extra, state.item))) onCorrect();
   else onWrong();
 }
-function startMic(){
+
+function requestMicPermission(){
+  return new Promise((resolve, reject)=>{
+    const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "::1";
+    if(!window.isSecureContext && !isLocalhost){
+      reject(new Error("insecure-context"));
+      return;
+    }
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      reject(new Error("media-devices-unavailable"));
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    })
+      .then((stream)=>{
+        stream.getTracks().forEach(track => track.stop());
+        resolve();
+      })
+      .catch((err)=> reject(err));
+  });
+}
+
+async function startMic(){
   if(state.locked || !state.item) return;
   const r = ensureRecognition();
   if(!r){
@@ -486,16 +514,38 @@ function startMic(){
     return;
   }
   try{
-    // if already listening, toggle off
     if(micListening){ try{ r.stop(); }catch(e){} return; }
-    // clear previous transcript
+
+    if(el.micStatus){
+      el.micStatus.textContent = "Allow microphone access to continue";
+      el.micStatus.classList.remove("listening");
+    }
+
+    await requestMicPermission();
+
     if(el.micTranscript) el.micTranscript.textContent = "";
     if(el.micStatus){ el.micStatus.textContent = "Listening… say the answer"; el.micStatus.classList.add("listening"); }
-    r.start();
-  }catch(e){
-    // start can throw if already started
-    try{ r.stop(); }catch(_){}
-    setTimeout(()=>{ try{ r.start(); }catch(_){ }}, 180);
+
+    try{ r.start(); }
+    catch(e){
+      try{ r.stop(); }catch(_){ }
+      setTimeout(()=>{ try{ r.start(); }catch(_){ }}, 180);
+    }
+  }catch(err){
+    const msg = (err && err.message) || "";
+    if(el.micStatus){
+      if(msg.includes("insecure") || msg.includes("HTTPS") || msg.includes("localhost")){
+        el.micStatus.textContent = "Mic needs HTTPS or localhost. Open this page from a local server or secure site.";
+      } else if(msg.includes("denied") || msg.includes("NotAllowedError") || /permission/i.test(msg)){
+        el.micStatus.textContent = "Mic access was blocked. Allow microphone permission and try again.";
+      } else if(msg.includes("media-devices-unavailable") || /support/i.test(msg)){
+        el.micStatus.textContent = "Your browser does not support microphone access.";
+      } else {
+        el.micStatus.textContent = "Mic permission was not granted. Tap the mic again to retry.";
+      }
+      el.micStatus.classList.remove("listening");
+    }
+    return;
   }
 }
 function stopMic(){
