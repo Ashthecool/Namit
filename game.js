@@ -70,7 +70,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 
 // ── Internet Leaderboard (optional, per-internet, filtered) ──
 const LEADERBOARD_ENDPOINT = null; // e.g. "https://your-worker.workers.dev/scores" — leave null for local demo
-const LB_KEY = "namit-lb-v1";
+const LB_KEY = "namit-lb-v2"; // v2 = empty school-only (v1 had seeded fake students)
 const LB_NAME_KEY = "namit-lb-name";
 const LB_MAX = 50;
 
@@ -116,18 +116,7 @@ function isValidLeaderboardName(name){
   return {ok:true, value:t};
 }
 function lbSeed(){
-  return [
-    {name:"Sakura", score:3420, rounds:28, correct:22, streak:9, date:"2026-04-12"},
-    {name:"Kenji", score:2980, rounds:24, correct:19, streak:7, date:"2026-04-20"},
-    {name:"Maya", score:2670, rounds:21, correct:17, streak:6, date:"2026-05-03"},
-    {name:"Leo", score:2350, rounds:19, correct:15, streak:5, date:"2026-05-18"},
-    {name:"Ava", score:1980, rounds:16, correct:13, streak:4, date:"2026-06-01"},
-    {name:"Noah", score:1650, rounds:14, correct:11, streak:4, date:"2026-06-15"},
-    {name:"Zara", score:1320, rounds:12, correct:9, streak:3, date:"2026-07-02"},
-    {name:"Omar", score:980, rounds:9, correct:7, streak:3, date:"2026-07-20"},
-    {name:"Luna", score:740, rounds:7, correct:5, streak:2, date:"2026-08-10"},
-    {name:"Finn", score:520, rounds:5, correct:4, streak:2, date:"2026-08-25"}
-  ];
+  return []; // school-only: start empty, no prefilled test students
 }
 function getLeaderboard(){
   try{
@@ -139,6 +128,7 @@ function getLeaderboard(){
     }
     const arr = JSON.parse(raw);
     if(!Array.isArray(arr)) throw new Error("bad");
+    // migrate: if old v1 seeded data leaked into v2 (shouldn't), treat as empty
     return arr;
   }catch(e){
     const seed = lbSeed();
@@ -146,6 +136,17 @@ function getLeaderboard(){
     return seed.slice();
   }
 }
+// one-time cleanup of old v1 seeded leaderboard (so school devices don't keep fake students)
+try{
+  const old = localStorage.getItem("namit-lb-v1");
+  if(old){
+    const a = JSON.parse(old);
+    const fakeNames = ["Sakura","Kenji","Maya","Leo","Ava","Noah","Zara","Omar","Luna","Finn"];
+    if(Array.isArray(a) && a.length && a.every(e=> fakeNames.includes(e.name))){
+      localStorage.removeItem("namit-lb-v1");
+    }
+  }
+}catch(e){}
 function saveLeaderboard(arr){
   try{ localStorage.setItem(LB_KEY, JSON.stringify(arr.slice(0,LB_MAX))); }catch(e){}
 }
