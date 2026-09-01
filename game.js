@@ -369,6 +369,11 @@ function ensureRecognition(){
     if(el.micStatus){ el.micStatus.textContent = "Listening… say the answer"; el.micStatus.classList.add("listening"); }
     if(el.micTranscript){ el.micTranscript.textContent = ""; el.micTranscript.classList.add("interim"); }
   };
+  r.onspeechend = ()=> {
+    if (micListening) {
+      try { r.stop(); } catch (e) {}
+    }
+  };
   r.onresult = (ev)=>{
     let interim = "";
     let finalText = "";
@@ -399,6 +404,7 @@ function ensureRecognition(){
           }
         }
       }catch(e){}
+      try { r.stop(); } catch (_e) {}
       handleMicFinal(heard);
     }
   };
@@ -454,6 +460,14 @@ function wordsToDigits(s){
   total += cur;
   return String(total);
 }
+function speechMatchesAnswer(text, item) {
+  const source = (text || "").trim();
+  if (!source) return false;
+  const normalizedSource = normalize(source);
+  const answers = [item.answer].concat(item.aliases || []).map(normalize).filter(Boolean);
+  return answers.includes(normalizedSource);
+}
+
 function handleMicFinal(text){
   if(state.locked || !state.item) return;
   const t = (text||"").trim();
@@ -462,6 +476,13 @@ function handleMicFinal(text){
     return;
   }
   stopMic();
+
+  // If the spoken text is the answer itself, it should count as correct.
+  if (speechMatchesAnswer(t, state.item)) {
+    onCorrect();
+    return;
+  }
+
   // for math items, allow spoken number words e.g. "fifty six" -> "56"
   let extra = null;
   if(state.item && state.item.mode === "math"){
@@ -521,7 +542,13 @@ async function startMic(){
       el.micStatus.classList.remove("listening");
     }
 
-    await requestMicPermission();
+    // Prefer the browser's native SpeechRecognition permission prompt.
+    // A separate getUserMedia call can fail before recognition.start() ever gets a chance.
+    try {
+      await requestMicPermission();
+    } catch (_err) {
+      // Ignore the fallback permission request; the speech recognition API may still prompt correctly.
+    }
 
     if(el.micTranscript) el.micTranscript.textContent = "";
     if(el.micStatus){ el.micStatus.textContent = "Listening… say the answer"; el.micStatus.classList.add("listening"); }
