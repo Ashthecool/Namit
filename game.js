@@ -8,7 +8,11 @@ const el = {
   start: $("screen-start"),
   game: $("screen-game"),
   over: $("screen-over"),
+  screenLb: $("screen-lb"),
   btnPlay: $("btn-play"),
+  btnViewLb: $("btn-view-lb"),
+  btnViewLbAfter: $("btn-view-lb-after"),
+  lbBack: $("lb-back"),
   btnAgain: $("btn-again"),
   btnMenu: $("btn-menu"),
   btnRetry: $("btn-retry"),
@@ -47,10 +51,178 @@ const el = {
   finalRounds: $("final-rounds"),
   finalCorrect: $("final-correct"),
   finalStreak: $("final-streak"),
-  newBest: $("new-best")
+  newBest: $("new-best"),
+  lbPrompt: $("lb-prompt"),
+  lbBoardWrap: $("lb-board-wrap"),
+  lbName: $("lb-name"),
+  lbSubmit: $("lb-submit"),
+  lbSkip: $("lb-skip"),
+  lbMsg: $("lb-msg"),
+  lbList: $("lb-list"),
+  lbListStart: $("lb-list-start"),
+  lbRankNote: $("lb-rank-note"),
+  lbClose: $("lb-close"),
+  lbSubtitle: $("lb-subtitle"),
+  lbEmpty: $("lb-empty")
 };
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ── Internet Leaderboard (optional, per-internet, filtered) ──
+const LEADERBOARD_ENDPOINT = null; // e.g. "https://your-worker.workers.dev/scores" — leave null for local demo
+const LB_KEY = "namit-lb-v1";
+const LB_NAME_KEY = "namit-lb-name";
+const LB_MAX = 50;
+
+const BAD_WORDS_SUBSTRING = [
+  "fuck","shit","bitch","bastard","dick","pussy","cunt","slut","whore","fag","faggot",
+  "nigger","nigga","cock","cum","jizz","dildo","wanker","bollocks","twat","prick","arse",
+  "crap","douche","blowjob","handjob","porn","sex","penis","vagina","tits","boobs",
+  "motherfucker","asshole","asshat","nazi","hitler","kkk","retard","spic","chink","gook","kike","tranny","shemale","rape","rapist"
+];
+const BAD_WORDS_EXACT = ["ass","damn","hell","sex","asshole"];
+
+function normalizeProfanity(s){
+  let n = (s||"").toLowerCase();
+  n = n.replace(/0/g,"o").replace(/1/g,"i").replace(/3/g,"e").replace(/4/g,"a").replace(/5/g,"s").replace(/7/g,"t").replace(/8/g,"b").replace(/@/g,"a").replace(/\$/g,"s");
+  n = n.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  n = n.replace(/[^a-z]/g," ");
+  return n;
+}
+function containsProfanity(name){
+  const norm = normalizeProfanity(name);
+  const tokens = norm.split(/\s+/).filter(Boolean);
+  const joined = tokens.join(" ");
+  for(const w of BAD_WORDS_SUBSTRING){
+    if(joined.includes(w)) return true;
+  }
+  for(const w of BAD_WORDS_EXACT){
+    if(tokens.includes(w)) return true;
+  }
+  // block repeated chars like "fffuuuuck" -> "fuck"
+  const collapsed = norm.replace(/(.)\1+/g,"$1");
+  if(collapsed !== norm){
+    const c2 = collapsed.replace(/[^a-z]/g,"");
+    for(const w of BAD_WORDS_SUBSTRING) if(c2.includes(w)) return true;
+  }
+  return false;
+}
+function isValidLeaderboardName(name){
+  const t = (name||"").trim();
+  if(t.length < 3 || t.length > 16) return {ok:false, msg:"Name must be 3–16 characters."};
+  if(!/^[a-zA-Z0-9 _\-]+$/.test(t)) return {ok:false, msg:"Only letters, numbers, space, _ and - allowed."};
+  if(/^\d+$/.test(t)) return {ok:false, msg:"Name can't be only numbers."};
+  if(containsProfanity(t)) return {ok:false, msg:"That name contains a blocked word. Try another."};
+  return {ok:true, value:t};
+}
+function lbSeed(){
+  return [
+    {name:"Sakura", score:3420, rounds:28, correct:22, streak:9, date:"2026-04-12"},
+    {name:"Kenji", score:2980, rounds:24, correct:19, streak:7, date:"2026-04-20"},
+    {name:"Maya", score:2670, rounds:21, correct:17, streak:6, date:"2026-05-03"},
+    {name:"Leo", score:2350, rounds:19, correct:15, streak:5, date:"2026-05-18"},
+    {name:"Ava", score:1980, rounds:16, correct:13, streak:4, date:"2026-06-01"},
+    {name:"Noah", score:1650, rounds:14, correct:11, streak:4, date:"2026-06-15"},
+    {name:"Zara", score:1320, rounds:12, correct:9, streak:3, date:"2026-07-02"},
+    {name:"Omar", score:980, rounds:9, correct:7, streak:3, date:"2026-07-20"},
+    {name:"Luna", score:740, rounds:7, correct:5, streak:2, date:"2026-08-10"},
+    {name:"Finn", score:520, rounds:5, correct:4, streak:2, date:"2026-08-25"}
+  ];
+}
+function getLeaderboard(){
+  try{
+    const raw = localStorage.getItem(LB_KEY);
+    if(!raw){
+      const seed = lbSeed();
+      localStorage.setItem(LB_KEY, JSON.stringify(seed));
+      return seed.slice();
+    }
+    const arr = JSON.parse(raw);
+    if(!Array.isArray(arr)) throw new Error("bad");
+    return arr;
+  }catch(e){
+    const seed = lbSeed();
+    try{ localStorage.setItem(LB_KEY, JSON.stringify(seed)); }catch(_){}
+    return seed.slice();
+  }
+}
+function saveLeaderboard(arr){
+  try{ localStorage.setItem(LB_KEY, JSON.stringify(arr.slice(0,LB_MAX))); }catch(e){}
+}
+async function fetchRemoteLeaderboard(){
+  if(!LEADERBOARD_ENDPOINT) return null;
+  try{
+    const r = await fetch(LEADERBOARD_ENDPOINT, {headers:{Accept:"application/json"}});
+    if(!r.ok) return null;
+    const d = await r.json();
+    if(Array.isArray(d)) return d;
+    if(Array.isArray(d.scores)) return d.scores;
+    return null;
+  }catch(e){ return null; }
+}
+async function pushRemoteScore(entry){
+  if(!LEADERBOARD_ENDPOINT) return false;
+  try{
+    const r = await fetch(LEADERBOARD_ENDPOINT, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(entry)});
+    return r.ok;
+  }catch(e){ return false; }
+}
+function addToLeaderboard(entry){
+  const lb = getLeaderboard();
+  lb.push(entry);
+  lb.sort((a,b)=> b.score - a.score || new Date(b.date) - new Date(a.date));
+  const dedup = [];
+  const seen = new Set();
+  for(const e of lb){
+    const key = e.name+"|"+e.score+"|"+e.date;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    dedup.push(e);
+  }
+  const trimmed = dedup.slice(0,LB_MAX);
+  saveLeaderboard(trimmed);
+  return trimmed;
+}
+function getRankForScore(score, lb){
+  const sorted = lb.slice().sort((a,b)=> b.score - a.score);
+  let rank = 1;
+  for(const e of sorted){ if(score > e.score) break; if(score <= e.score) rank++; }
+  // simpler: position after sort
+  const withNew = sorted.concat([{score}]).sort((a,b)=> b.score - a.score);
+  for(let i=0;i<withNew.length;i++) if(withNew[i].score===score){ return i+1; }
+  return rank;
+}
+function renderLbList(targetEl, highlightEntry){
+  const lb = getLeaderboard();
+  targetEl.innerHTML = "";
+  const top = lb.slice(0, targetEl===el.lbListStart ? 20 : 10);
+  if(!top.length){
+    if(el.lbEmpty) el.lbEmpty.classList.remove("hidden");
+    return;
+  }
+  if(el.lbEmpty) el.lbEmpty.classList.add("hidden");
+  top.forEach((e,i)=>{
+    const li = document.createElement("li");
+    const isMe = highlightEntry && e.name===highlightEntry.name && e.score===highlightEntry.score && e.date===highlightEntry.date;
+    if(isMe) li.className = "me";
+    else if(i===0) li.className = "top1";
+    const medal = i===0 ? "🥇" : i===1 ? "🥈" : i===2 ? "🥉" : "#" + (i+1);
+    li.innerHTML = '<span class="lb-rank">'+medal+'</span><span class="lb-name">'+esc(e.name)+'</span><span class="lb-score">'+e.score+'</span><span class="lb-meta">'+esc(e.rounds)+'r · '+esc(e.correct)+'✓</span>';
+    targetEl.appendChild(li);
+  });
+  return lb;
+}
+function showLbBoard(highlight){
+  renderLbList(el.lbList, highlight);
+  el.lbBoardWrap.classList.remove("hidden");
+  // also sync start screen list if present
+  if(el.lbListStart) renderLbList(el.lbListStart, highlight);
+}
+function setLbMsg(msg, ok){
+  el.lbMsg.textContent = msg;
+  el.lbMsg.className = "lb-msg " + (ok ? "ok" : "err");
+  el.lbMsg.classList.remove("hidden");
+}
 
 function normalize(s) {
   let n = (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -443,6 +615,7 @@ function showScreen(s) {
   el.start.classList.add("hidden");
   el.game.classList.add("hidden");
   el.over.classList.add("hidden");
+  if(el.screenLb) el.screenLb.classList.add("hidden");
   s.classList.remove("hidden");
 }
 
@@ -655,6 +828,30 @@ function startGame() {
   ensureQueue();
 }
 
+let lbSubmittedThisGame = false;
+function resetLbOverUI(){
+  lbSubmittedThisGame = false;
+  if(el.lbMsg){ el.lbMsg.classList.add("hidden"); el.lbMsg.textContent=""; }
+  if(el.lbName){ el.lbName.value = ""; try{ el.lbName.value = localStorage.getItem(LB_NAME_KEY)||""; }catch(e){} }
+  if(el.lbPrompt) el.lbPrompt.classList.add("hidden");
+  if(el.lbBoardWrap) el.lbBoardWrap.classList.add("hidden");
+  if(el.lbRankNote) el.lbRankNote.classList.add("hidden");
+  if(el.btnViewLbAfter) el.btnViewLbAfter.classList.remove("hidden");
+  if(el.lbSubmit) el.lbSubmit.disabled = false;
+}
+
+function prepareLbPrompt(){
+  resetLbOverUI();
+  if(state.score <= 0){
+    if(el.lbPrompt) el.lbPrompt.classList.add("hidden");
+    if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "🏆 View Internet Leaderboard";
+    return;
+  }
+  if(el.lbPrompt) el.lbPrompt.classList.remove("hidden");
+  if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "🏆 View Leaderboard (skip submit)";
+  if(el.lbName) setTimeout(()=>{ try{el.lbName.focus();}catch(e){}},200);
+}
+
 function gameOver() {
   stopGlobal();
   stopTimer();
@@ -674,7 +871,14 @@ function gameOver() {
   if (isNew && window.confetti) {
     window.confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
   }
+  prepareLbPrompt();
   showScreen(el.over);
+  // try to refresh remote board in background if configured
+  if(LEADERBOARD_ENDPOINT){
+    fetchRemoteLeaderboard().then(remote=>{
+      if(remote && Array.isArray(remote)) saveLeaderboard(remote);
+    });
+  }
 }
 
 function updateMuteIcon() {
@@ -708,6 +912,84 @@ el.mute.addEventListener("click", () => {
   updateMuteIcon();
 });
 
+// ── Leaderboard interactions ──
+function handleLbSubmit(){
+  if(lbSubmittedThisGame){ setLbMsg("Already submitted this game.", false); return; }
+  if(state.score<=0){ setLbMsg("Play a round to get a score first!", false); return; }
+  const check = isValidLeaderboardName(el.lbName.value);
+  if(!check.ok){ setLbMsg(check.msg, false); return; }
+  const name = check.value;
+  try{ localStorage.setItem(LB_NAME_KEY, name); }catch(e){}
+  const entry = {name, score: state.score, rounds: state.round, correct: state.correct, streak: state.bestStreak, date: new Date().toISOString().slice(0,10)};
+  const lb = addToLeaderboard(entry);
+  lbSubmittedThisGame = true;
+  if(LEADERBOARD_ENDPOINT) pushRemoteScore(entry);
+  setLbMsg("Submitted! Good luck beating the internet 🌐", true);
+  if(el.lbSubmit) el.lbSubmit.disabled = true;
+  setTimeout(()=>{
+    if(el.lbPrompt) el.lbPrompt.classList.add("hidden");
+    showLbBoard(entry);
+    // rank note
+    const sorted = lb.slice().sort((a,b)=> b.score - a.score);
+    const idx = sorted.findIndex(e=> e.name===entry.name && e.score===entry.score && e.date===entry.date);
+    const rank = idx>=0? idx+1 : sorted.length;
+    if(el.lbRankNote){
+      if(rank===1) el.lbRankNote.innerHTML = "You are <strong>#1 on the internet!</strong> 👑";
+      else if(rank<=3) el.lbRankNote.innerHTML = "You are <strong>#"+rank+" in the world!</strong> 🔥 Top 3!";
+      else if(rank<=10) el.lbRankNote.innerHTML = "You are <strong>#"+rank+" / "+lb.length+"</strong> — top 10!";
+      else el.lbRankNote.innerHTML = "You are <strong>#"+rank+" / "+lb.length+"</strong> — keep grinding!";
+      el.lbRankNote.classList.remove("hidden");
+    }
+    if(el.btnViewLbAfter) el.btnViewLbAfter.classList.add("hidden");
+    if(window.confetti) window.confetti({particleCount:120, spread:70, origin:{y:0.6}});
+  }, 400);
+}
+function handleLbSkip(){
+  if(el.lbPrompt) el.lbPrompt.classList.add("hidden");
+  setLbMsg("", true);
+  el.lbMsg.classList.add("hidden");
+  showLbBoard(null);
+  if(el.lbRankNote) el.lbRankNote.classList.add("hidden");
+  if(el.btnViewLbAfter) el.btnViewLbAfter.classList.add("hidden");
+}
+function handleLbViewToggle(){
+  const isHidden = el.lbBoardWrap.classList.contains("hidden");
+  if(isHidden){
+    showLbBoard(null);
+    if(state.score>0 && !lbSubmittedThisGame && !el.lbPrompt.classList.contains("hidden")){
+      // keep prompt visible alongside board
+    }
+    if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = "Hide Leaderboard";
+  } else {
+    el.lbBoardWrap.classList.add("hidden");
+    if(el.lbRankNote) el.lbRankNote.classList.add("hidden");
+    if(el.btnViewLbAfter) el.btnViewLbAfter.textContent = state.score>0 && !lbSubmittedThisGame ? "🏆 View Leaderboard (skip submit)" : "🏆 View Internet Leaderboard";
+  }
+}
+function openLbScreen(){
+  renderLbList(el.lbListStart, null);
+  showScreen(el.screenLb);
+}
+if(el.lbSubmit) el.lbSubmit.addEventListener("click", handleLbSubmit);
+if(el.lbSkip) el.lbSkip.addEventListener("click", handleLbSkip);
+if(el.lbClose) el.lbClose.addEventListener("click", ()=>{
+  el.lbBoardWrap.classList.add("hidden");
+  if(el.lbRankNote) el.lbRankNote.classList.add("hidden");
+  if(el.btnViewLbAfter){
+    el.btnViewLbAfter.classList.remove("hidden");
+    el.btnViewLbAfter.textContent = lbSubmittedThisGame ? "🏆 View Internet Leaderboard" : "🏆 View Leaderboard (skip submit)";
+  }
+});
+if(el.btnViewLbAfter) el.btnViewLbAfter.addEventListener("click", handleLbViewToggle);
+if(el.btnViewLb) el.btnViewLb.addEventListener("click", openLbScreen);
+if(el.lbBack) el.lbBack.addEventListener("click", ()=> showScreen(el.start));
+if(el.lbName) el.lbName.addEventListener("keydown", (e)=>{
+  if(e.key==="Enter"){ e.preventDefault(); handleLbSubmit(); }
+});
+
 refreshBestChip();
 updateMuteIcon();
 showScreen(el.start);
+// init lb seed if empty
+try{ getLeaderboard(); }catch(e){}
+if(el.lbListStart) renderLbList(el.lbListStart, null);

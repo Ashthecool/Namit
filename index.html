@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>Namit — name literally anything</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="shortcut icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,6 +49,7 @@
     <div id="chip-best" class="chip hidden">🏆 <span class="lbl">Best</span> <span id="best-val">0</span></div>
     <div class="start-actions">
       <button id="btn-play" class="btn play-btn">▶ Play</button>
+      <button id="btn-view-lb" class="btn ghost" type="button">🏆 Leaderboard</button>
     </div>
     <p class="credit">Images &amp; hints live from Wikipedia · internet required</p>
   </section>
@@ -103,10 +107,46 @@
       <div class="stat"><div class="v" id="final-correct">0</div><div class="k">Named</div></div>
       <div class="stat"><div class="v" id="final-streak">0</div><div class="k">Best streak</div></div>
     </div>
+    <!-- Internet Leaderboard (optional) -->
+    <div id="lb-area" class="lb-area">
+      <div id="lb-prompt" class="lb-prompt hidden">
+        <div class="lb-prompt-title">🌐 Beat the internet?</div>
+        <p class="lb-prompt-sub">Submit your score to the Internet Leaderboard — optional, global, and filtered for bad words.</p>
+        <div class="lb-form">
+          <input id="lb-name" type="text" maxlength="16" placeholder="Your name (3–16 letters)" autocomplete="off" spellcheck="false">
+          <button id="lb-submit" class="btn" type="button">Submit</button>
+          <button id="lb-skip" class="btn ghost" type="button">Skip</button>
+        </div>
+        <p id="lb-msg" class="lb-msg hidden"></p>
+      </div>
+      <div id="lb-board-wrap" class="lb-board-wrap hidden">
+        <div class="lb-header">
+          <span class="lb-title">🌐 Internet Leaderboard</span>
+          <span id="lb-subtitle" class="lb-subtitle">Top 10 — everyone on the internet</span>
+        </div>
+        <ol id="lb-list" class="lb-list"></ol>
+        <p id="lb-rank-note" class="lb-rank-note hidden"></p>
+        <div class="lb-actions">
+          <button id="lb-close" class="btn ghost" type="button">Hide</button>
+        </div>
+      </div>
+      <button id="btn-view-lb-after" class="btn ghost lb-view-btn" type="button">🏆 View Internet Leaderboard</button>
+    </div>
     <div class="over-actions">
       <button id="btn-again" class="btn">↻ Play again</button>
       <button id="btn-menu" class="btn ghost">Menu</button>
     </div>
+  </section>
+
+  <section id="screen-lb" class="screen hidden">
+    <button id="lb-back" class="btn ghost" type="button">← Back</button>
+    <div class="lb-header" style="margin-top:16px">
+      <span class="lb-title">🌐 Internet Leaderboard</span>
+      <span class="lb-subtitle">Top 20 — everyone on the internet</span>
+    </div>
+    <ol id="lb-list-start" class="lb-list"></ol>
+    <p id="lb-empty" class="lb-empty hidden">No scores yet — be the first to play!</p>
+    <p class="lb-footnote">Leaderboard is stored per-browser for this demo. Plug in a backend URL in <code>game.js → LEADERBOARD_ENDPOINT</code> to make it truly global.</p>
   </section>
 
 </main>
